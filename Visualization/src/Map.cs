@@ -10,45 +10,30 @@ public class Map(List<List<Map.Field>> data)
     {
 
         return new TileSetCoordinates(
-            wall: new(new(5, 5)),
-            wallCorner: new(new(5, 4)),
-            floor: new(new(0, 0)),
-            hill: new(new(5, 0)),
-            ditch: new(new(0, 0), 1),
-            water: new(new(0, 0), 2),
-            explosiveBarrel: new(new(5, 2)),
-            flagStand1: new(new(1, 8)),
-            flagStand2: new(new(3, 8))
+            Wall: new(new(5, 5)),
+            WallCorner: new(new(5, 4)),
+            Floor: new(new(0, 0)),
+            Hill: new(new(5, 0)),
+            Ditch: new(new(0, 0), 1),
+            Water: new(new(0, 0), 2),
+            ExplosiveBarrel: new(new(5, 2)),
+            FlagStand1: new(new(1, 8)),
+            FlagStand2: new(new(3, 8))
         );
     }
-    
-    private class TileSetCoordinates(
-        TileMapCell wall,
-        TileMapCell wallCorner,
-        TileMapCell floor,
-        TileMapCell hill,
-        TileMapCell ditch,
-        TileMapCell water,
-        TileMapCell explosiveBarrel,
-        TileMapCell flagStand1,
-        TileMapCell flagStand2)
-    {
-        public readonly TileMapCell Wall = wall;
-        public readonly TileMapCell WallCorner = wallCorner;
-        public readonly TileMapCell Floor = floor;
-        public readonly TileMapCell Hill = hill;
-        public readonly TileMapCell Ditch = ditch;
-        public readonly TileMapCell Water = water;
-        public readonly TileMapCell ExplosiveBarrel = explosiveBarrel;
-        public readonly TileMapCell FlagStand1 = flagStand1;
-        public readonly TileMapCell FlagStand2 = flagStand2;
-    }
 
-    private class TileMapCell(Vector2I atlasCoords, int alternativeTile = 0)
-    {
-        public readonly Vector2I AtlasCoords = atlasCoords;
-        public readonly int AlternativeTile = alternativeTile;
-    }
+    private record TileSetCoordinates(
+        TileMapCell Wall,
+        TileMapCell WallCorner,
+        TileMapCell Floor,
+        TileMapCell Hill,
+        TileMapCell Ditch,
+        TileMapCell Water,
+        TileMapCell ExplosiveBarrel,
+        TileMapCell FlagStand1,
+        TileMapCell FlagStand2);
+
+    private record TileMapCell(Vector2I AtlasCoords, int AlternativeTile = 0);
 
     public enum Field
     {
