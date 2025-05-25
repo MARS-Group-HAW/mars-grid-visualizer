@@ -1,0 +1,116 @@
+using System.Text.Json;
+using Godot;
+using mmvp.src;
+
+namespace mmvp;
+
+public static class DebugExtensions
+{
+    private static readonly JsonSerializerOptions jsonOptions = new()
+    {
+        WriteIndented = true,
+    };
+
+    public static T Dbg<T>(this T obj, string label = null,
+                          [System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+                          [System.Runtime.CompilerServices.CallerFilePath] string filePath = "",
+                          [System.Runtime.CompilerServices.CallerLineNumber] int lineNumber = 0)
+    {
+        string fileName = System.IO.Path.GetFileName(filePath);
+        string prefix = label != null ? $"{label}: " : "";
+
+        try
+        {
+            string json = JsonSerializer.Serialize(obj, jsonOptions);
+            GD.Print($"[DBG] {fileName}:{lineNumber} in {memberName}(): {prefix}");
+            GD.Print(json);
+        }
+        catch
+        {
+            GD.Print($"[DBG] {fileName}:{lineNumber} in {memberName}(): {prefix}{obj}");
+        }
+
+        return obj;
+    }
+}
+
+public partial class Program : Node2D
+{
+
+    private WebSocketPeer socket = new();
+    private int currentTick = 1;
+    private TileMapLayer tileMapLayer;
+    private bool webSocketConnection;
+
+    public override void _Ready()
+    {
+        // TODO: properly find map path
+        var map = Map.ReadInMap("../LaserTagBox/Resources/rec1_Battleground.csv");
+        // GD.Print("Map: \n", map);
+
+        tileMapLayer = GetNode<TileMapLayer>("%BaseMap");
+        map.PopulateTileMap(tileMapLayer);
+
+        // ConnectWebSocket();
+
+        var parsed = JsonSerializer
+            .Deserialize<AgentJsonData>(File.ReadAllText("./msg_test_buffer.json"));
+
+        DrawAgents(parsed.Agents);
+    }
+
+    public override void _Process(double delta)
+    {
+        if (webSocketConnection) WebSocketLoop();
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (IsInstanceValid(@event) &&
+                @event is InputEventKey key &&
+                key.Keycode == Key.Escape)
+        {
+            GetTree().Quit();
+        }
+    }
+
+    private void ConnectWebSocket()
+    {
+        if (socket.ConnectToUrl("ws://127.0.0.1:8181") != Godot.Error.Ok)
+        {
+            GD.Print("Could not connect to WebSocket Server. Is the Simulation running?");
+            GetTree().Quit();
+        }
+        webSocketConnection = true;
+        GD.Print("Connected to Simulation.");
+    }
+
+    private void WebSocketLoop()
+    {
+        socket.Poll();
+
+        if (socket.GetReadyState() == WebSocketPeer.State.Open)
+        {
+            socket.SendText(currentTick.ToString());
+            while (socket.GetAvailablePacketCount() > 0)
+            {
+                var message = socket.GetPacket().GetStringFromUtf8();
+                GD.Print("Message: ", Json.ParseString(message));
+            }
+
+        }
+
+        if (socket.GetReadyState() == WebSocketPeer.State.Closed)
+        {
+            GD.Print($"WebSocket closed with code: {socket.GetCloseCode()} and reason: {socket.GetCloseReason()}");
+            SetProcess(false);
+        }
+    }
+
+    private void DrawAgents(List<Agent> agents)
+    {
+        foreach (var agent in agents)
+        {
+        }
+    }
+}
