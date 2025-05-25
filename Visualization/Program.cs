@@ -7,16 +7,19 @@ namespace mmvp;
 
 public partial class Program : Node2D
 {
+    private PackedScene agentScene = GD.Load<PackedScene>("res://src/agent/agent.tscn");
 
     private WebSocketPeer socket = new();
     private int currentTick = 1;
     private TileMapLayer tileMapLayer;
     private bool webSocketConnection;
+    private Map map;
 
     public override void _Ready()
     {
         // TODO: properly find map path
-        var map = Map.ReadInMap("../LaserTagBox/Resources/rec1_Battleground.csv");
+        // TODO: move path into map class
+        map = Map.ReadInMap("../LaserTagBox/Resources/rec1_Battleground.csv");
         // GD.Print("Map: \n", map);
 
         tileMapLayer = GetNode<TileMapLayer>("%BaseMap");
@@ -82,6 +85,12 @@ public partial class Program : Node2D
     {
         foreach (var agent in agents)
         {
+            var agentInstance = (Node2D)agentScene.Instantiate();
+            agentInstance.Position = tileMapLayer.MapToLocal(new(agent.X, agent.Y));
+            agentInstance.ZIndex = 99;
+            agentInstance.ZAsRelative = true;
+
+            tileMapLayer.AddChild(agentInstance);
         }
     }
 }

@@ -3,26 +3,36 @@ using System.Collections.Generic;
 using Godot;
 using System.Text.Json.Serialization;
 
-
 namespace mmvp.src.agent;
 
-public enum Stance
-{
-    Standing,
-    Crouching,
-    Creeping,
-}
 
-public class Agent(int x, int y)
+public partial class Agent : Node2D
 {
+    public enum Stance
+    {
+        Standing,
+        Crouching,
+        Creeping,
+    }
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum Color
+    {
+        Red,
+        Green,
+        Blue,
+        Yellow,
+        Grey,
+    }
+
     [JsonPropertyName("x")]
-    public int X { get; set; } = x;
+    public int X { get; set; }
     [JsonPropertyName("y")]
-    public int Y { get; set; } = y;
+    public int Y { get; set; }
     [JsonPropertyName("alive")]
     public bool Alive { get; set; } = true;
     [JsonPropertyName("color")]
-    public string Color { get; set; } = "Dead";
+    public Color TeamColor { get; set; } = Color.Grey;
     [JsonPropertyName("team")]
     public string Team { get; set; } = null;
     [JsonPropertyName("visualRange")]
@@ -30,7 +40,14 @@ public class Agent(int x, int y)
     [JsonPropertyName("gotShot")]
     public bool GotShot { get; set; } = false;
     [JsonPropertyName("stance")]
-    public Stance Stance { get; set; } = Stance.Standing;
+    public Stance CurrentStance { get; set; } = Stance.Standing;
+
+    public Agent() { }
+    public Agent(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
 }
 
 public class AgentJsonData
