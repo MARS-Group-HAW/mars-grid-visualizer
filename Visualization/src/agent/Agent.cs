@@ -4,7 +4,7 @@ using Godot;
 using System.Text.Json.Serialization;
 
 
-namespace mmvp.src;
+namespace mmvp.src.agent;
 
 public enum Stance
 {

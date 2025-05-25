@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cjie0j12xbmuk"]
+
+[ext_resource type="Script" uid="uid://dh8sd0omkglqh" path="res://src/agent/Agent.cs" id="1_byrto"]
+[ext_resource type="Texture2D" uid="uid://dgrea0q7uixcy" path="res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/green_character.png" id="2_nilkv"]
+
+[node name="Agent" type="Node2D"]
+script = ExtResource("1_byrto")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_nilkv")
