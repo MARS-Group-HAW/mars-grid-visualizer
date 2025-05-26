@@ -5,6 +5,16 @@ using System.Text.Json.Serialization;
 
 namespace mmvp.src.agent;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum Color
+{
+    Red,
+    Green,
+    Blue,
+    Yellow,
+    Grey,
+}
+
 
 public partial class Agent : Node2D
 {
@@ -15,16 +25,6 @@ public partial class Agent : Node2D
         Creeping,
     }
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum Color
-    {
-        Red,
-        Green,
-        Blue,
-        Yellow,
-        Grey,
-    }
-
     [JsonPropertyName("x")]
     public int X { get; set; }
     [JsonPropertyName("y")]
@@ -32,7 +32,7 @@ public partial class Agent : Node2D
     [JsonPropertyName("alive")]
     public bool Alive { get; set; } = true;
     [JsonPropertyName("color")]
-    public Color TeamColor { get; set; } = Color.Grey;
+    public Color Color { get; set; } = Color.Grey;
     [JsonPropertyName("team")]
     public string Team { get; set; } = null;
     [JsonPropertyName("visualRange")]
@@ -68,9 +68,9 @@ public class AgentJsonData
 public class Score
 {
     [JsonPropertyName("teamName")]
-    public string TeamName;
+    public string TeamName { get; set; } = "";
     [JsonPropertyName("teamColor")]
-    public string TeamColor;
+    public Color TeamColor;
     [JsonPropertyName("score")]
     public int TeamScore;
 }
