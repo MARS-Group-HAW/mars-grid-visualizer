@@ -19,7 +19,7 @@ public partial class Program : Node2D
     {
         // TODO: properly find map path
         // TODO: move path into map class
-        map = Map.ReadInMap("../LaserTagBox/Resources/rec1_Battleground.csv");
+        map = Map.ReadInMap();
         // GD.Print("Map: \n", map);
 
         tileMapLayer = GetNode<TileMapLayer>("%BaseMap");

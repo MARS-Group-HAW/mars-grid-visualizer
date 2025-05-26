@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Godot;
 
 namespace mmvp.src;
@@ -11,8 +13,8 @@ public class Map(List<List<Map.Field>> data)
 
         return new TileSetCoordinates(
             SourceId: 3,
-            Wall: new(new(5, 5)),
-            VerticalWall: new(new(5, 5), 1),
+            Wall: new(new(5, 5), 1),
+            VerticalWall: new(new(5, 5)),
             LeftUpperWallCorner: new(new(5, 4)),
             RightUpperWallCorner: new(new(9, 4)),
             LeftLowerWallCorner: new(new(9, 4)),
@@ -32,8 +34,8 @@ public class Map(List<List<Map.Field>> data)
 
         return new TileSetCoordinates(
             SourceId: 0,
-            Wall: new(new(0, 1)),
-            VerticalWall: new(new(0, 1), 1),
+            Wall: new(new(0, 1), 1),
+            VerticalWall: new(new(0, 1)),
             LeftUpperWallCorner: new(new(0, 0)),
             RightUpperWallCorner: new(new(9, 4)),
             LeftLowerWallCorner: new(new(9, 4)),
@@ -101,10 +103,11 @@ public class Map(List<List<Map.Field>> data)
 
     private TileSetCoordinates currentTileSetCoords = GetMinipackTiles();
 
-    public static Map ReadInMap(string filename)
+    public static Map ReadInMap()
     {
+        var mapPath = GetMapFilename();
         var mapData = new List<List<Field>>();
-        string[] lines = File.ReadAllLines(filename);
+        string[] lines = File.ReadAllLines(mapPath);
         foreach (string line in lines)
         {
             var row = line.Split(';').Select(field => field switch
@@ -125,6 +128,32 @@ public class Map(List<List<Map.Field>> data)
         return new Map(mapData);
     }
 
+    private static string GetMapFilename()
+    {
+        string configFilename = "config.json";
+        var cwd = Directory.GetCurrentDirectory().Split("/").Last();
+        GD.Print("CWD: ", cwd);
+        var pathToLasertagBox = cwd switch
+        {
+            "LaserTagBox" => "./",
+            "model-mars-laser-tag-game" => "./LaserTagBox/",
+            "Visualization" => "../LaserTagBox/",
+            _ => throw new NotImplementedException()
+        };
+        string pathToConfigFile = $"{pathToLasertagBox}{configFilename}";
+
+        if (!File.Exists(pathToConfigFile))
+        {
+            throw new FileNotFoundException($"Config file {pathToConfigFile} does not exist");
+        }
+
+        var configJson = File.ReadAllText(pathToConfigFile);
+        var config = JsonSerializer.Deserialize<LaserTagConfig>(configJson);
+
+        var playerBodyLayer = config.Layers.Find(l => l.Name == "PlayerBodyLayer");
+        return $"{pathToLasertagBox}{playerBodyLayer.File}";
+    }
+
     public override string ToString()
     {
         return string.Join("", data.ConvertAll(row => string.Join("", row.ConvertAll(field => field switch
@@ -135,6 +164,11 @@ public class Map(List<List<Map.Field>> data)
             Field.Ditch => "_",
             _ => "="
         })) + "\n"));
+    }
+
+    public Vector2I Size()
+    {
+        return new(data[0].Count, data.Count);
     }
 
     public void PopulateTileMap(TileMapLayer tileMapLayer)
@@ -220,3 +254,17 @@ public class Map(List<List<Map.Field>> data)
     }
 }
 
+public class LaserTagConfig
+{
+    [JsonPropertyName("layers")]
+    public List<LayerConfig> Layers { get; set; } = [];
+}
+
+public class LayerConfig
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = "";
+
+    [JsonPropertyName("file")]
+    public string File { get; set; } = "";
+}
