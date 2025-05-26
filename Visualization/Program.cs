@@ -9,6 +9,8 @@ namespace mmvp;
 
 public partial class Program : Node2D
 {
+    private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
     private PackedScene agentScene = GD.Load<PackedScene>("res://src/agent/agent.tscn");
 
     private WebSocketPeer socket = new();
@@ -24,15 +26,12 @@ public partial class Program : Node2D
         map = Map.ReadInMap();
         // GD.Print("Map: \n", map);
 
-        tileMapLayer = GetNode<TileMapLayer>("%BaseMap");
+
+        tileMapLayer = GetNode<TileMapLayer>("%TopDownShooterBaseMap");
         map.PopulateTileMap(tileMapLayer);
 
-        // ConnectWebSocket();
+        ConnectWebSocket();
 
-        var parsed = JsonSerializer
-            .Deserialize<AgentJsonData>(File.ReadAllText("./msg_test_buffer.json"));
-
-        DrawAgents(parsed.Agents);
     }
 
     public override void _Process(double delta)
@@ -65,18 +64,26 @@ public partial class Program : Node2D
     {
         socket.Poll();
 
-        if (socket.GetReadyState() == WebSocketPeer.State.Open)
+        if (socket.GetReadyState() is WebSocketPeer.State.Open)
         {
-            socket.SendText(currentTick.ToString());
             while (socket.GetAvailablePacketCount() > 0)
             {
                 var message = socket.GetPacket().GetStringFromUtf8();
-                GD.Print("Message: ", Json.ParseString(message));
-            }
+                if (string.IsNullOrWhiteSpace(message))
+                {
+                    continue;
+                }
+                var parsed = JsonSerializer.Deserialize<AgentJsonData>(message, jsonOptions);
 
+                if (currentTick != parsed.ExpectingTick) currentTick = parsed.ExpectingTick;
+                DrawGame(parsed);
+                GD.Print("currentTick: ", currentTick);
+                socket.SendText(currentTick.ToString());
+                currentTick += 1;
+            }
         }
 
-        if (socket.GetReadyState() == WebSocketPeer.State.Closed)
+        if (socket.GetReadyState() is WebSocketPeer.State.Closed)
         {
             GD.Print($"WebSocket closed with code: {socket.GetCloseCode()} and reason: {socket.GetCloseReason()}");
             SetProcess(false);
