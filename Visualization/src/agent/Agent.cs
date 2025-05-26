@@ -52,24 +52,47 @@ public partial class Agent : Node2D
 
 public class AgentJsonData
 {
-    [JsonPropertyName("tick")]
-    public int Tick { get; set; }
+    [JsonPropertyName("expectingTick")]
+    public int ExpectingTick { get; set; } = -1;
 
     [JsonPropertyName("agents")]
     public List<Agent> Agents { get; set; } = [];
 
-    // TODO: add items and barrels
+    [JsonPropertyName("items")]
+    public List<Item> Items { get; set; } = [];
+
+    [JsonPropertyName("explosiveBarrels")]
+    public List<Barrel> Barrels { get; set; } = [];
 
     // FIXME: for some reason scores are empty
     [JsonPropertyName("scores")]
     public List<Score> Scores { get; set; } = [];
 }
 
+public record Barrel(
+        [property: JsonPropertyName("id")] string Id,
+        [property: JsonPropertyName("x")] int X,
+        [property: JsonPropertyName("y")] int Y,
+        [property: JsonPropertyName("hasExploded")] bool HasExploded);
+
+public record Item(
+  [property: JsonPropertyName("id")] string Id,
+  [property: JsonPropertyName("x")] int X,
+  [property: JsonPropertyName("y")] int Y,
+  [property: JsonPropertyName("color")] Color Color,
+  [property: JsonPropertyName("type")] ItemType Type,
+  [property: JsonPropertyName("pickedUp")] bool PickedUp,
+  [property: JsonPropertyName("ownerID")] string OwnerId);
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum ItemType
+{
+    Flag
+}
+
 public class Score
 {
-    [JsonPropertyName("teamName")]
     public string TeamName { get; set; } = "";
-    [JsonPropertyName("teamColor")]
     public Color TeamColor;
     [JsonPropertyName("score")]
     public int TeamScore;
