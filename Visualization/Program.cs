@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Godot;
 using mmvp.src;
 using mmvp.src.agent;
+using Color = mmvp.src.agent.Color;
 
 namespace mmvp;
 
@@ -81,15 +83,43 @@ public partial class Program : Node2D
         }
     }
 
+    private void DrawGame(AgentJsonData parsed)
+    {
+        GetTree().CallGroup("Agents", "queue_free");
+        DrawAgents(parsed.Agents);
+    }
+
     private void DrawAgents(List<Agent> agents)
     {
         foreach (var agent in agents)
         {
             var agentInstance = (Node2D)agentScene.Instantiate();
-            agentInstance.Position = tileMapLayer.MapToLocal(new(agent.X, agent.Y));
+            agentInstance.Position = tileMapLayer.MapToLocal(new(agent.X, map.Size().Y - 1 - agent.Y));
+            if (agent.Alive)
+                agentInstance.GetNode<Sprite2D>("Sprite2D").Texture =
+                    agent.Color switch
+                    {
+                        Color.Red => GD.Load<Texture2D>(
+                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/red_character.png"),
+                        Color.Green => GD.Load<Texture2D>(
+                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/green_character.png"),
+                        Color.Blue => GD.Load<Texture2D>(
+                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/purple_character.png"),
+                        Color.Yellow => GD.Load<Texture2D>(
+                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/yellow_character.png"),
+                        Color.Grey => GD.Load<Texture2D>(
+                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/campfire.png"),
+                        _ => throw new UnreachableException(),
+                    };
+            else
+            {
+                agentInstance.GetNode<Sprite2D>("Sprite2D").Texture = GD.Load<Texture2D>(
+                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/campfire.png");
+                agent.Color = Color.Grey;
+            }
+
             agentInstance.ZIndex = 99;
             agentInstance.ZAsRelative = true;
-
             tileMapLayer.AddChild(agentInstance);
         }
     }
