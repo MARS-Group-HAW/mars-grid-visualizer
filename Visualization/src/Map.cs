@@ -10,8 +10,13 @@ public class Map(List<List<Map.Field>> data)
     {
 
         return new TileSetCoordinates(
+            SourceId: 3,
             Wall: new(new(5, 5)),
-            WallCorner: new(new(5, 4)),
+            VerticalWall: new(new(5, 5), 1),
+            LeftUpperWallCorner: new(new(5, 4)),
+            RightUpperWallCorner: new(new(9, 4)),
+            LeftLowerWallCorner: new(new(9, 4)),
+            RightLowerWallCorner: new(new(9, 4)),
             Floor: new(new(0, 0)),
             Hill: new(new(5, 0)),
             Ditch: new(new(0, 0), 1),
@@ -22,9 +27,56 @@ public class Map(List<List<Map.Field>> data)
         );
     }
 
+    private static TileSetCoordinates GetMinipackTiles()
+    {
+
+        return new TileSetCoordinates(
+            SourceId: 0,
+            Wall: new(new(0, 1)),
+            VerticalWall: new(new(0, 1), 1),
+            LeftUpperWallCorner: new(new(0, 0)),
+            RightUpperWallCorner: new(new(9, 4)),
+            LeftLowerWallCorner: new(new(9, 4)),
+            RightLowerWallCorner: new(new(9, 4)),
+            Floor: new(new(4, 2)),
+            Hill: new(new(5, 0)),
+            Ditch: new(new(4, 2), 1),
+            Water: new(new(0, 3)),
+            ExplosiveBarrel: new(new(3, 2)),
+            FlagStand1: new(new(1, 8)),
+            FlagStand2: new(new(3, 8))
+        );
+    }
+
+    private static TileSetCoordinates GetTopDownShooterTiles()
+    {
+
+        return new TileSetCoordinates(
+            SourceId: 2,
+            Wall: new(new(11, 4)),
+            VerticalWall: new(new(11, 5)),
+            LeftUpperWallCorner: new(new(9, 4)),
+            RightUpperWallCorner: new(new(10, 4)),
+            LeftLowerWallCorner: new(new(9, 5)),
+            RightLowerWallCorner: new(new(10, 5)),
+            Floor: new(new(22, 14)),
+            Hill: new(new(4, 0)),
+            Ditch: new(new(5, 0), 1),
+            Water: new(new(19, 0)),
+            ExplosiveBarrel: new(new(18, 11)),
+            FlagStand1: new(new(17, 16)),
+            FlagStand2: new(new(18, 16))
+        );
+    }
+
     private record TileSetCoordinates(
+        int SourceId,
         TileMapCell Wall,
-        TileMapCell WallCorner,
+        TileMapCell VerticalWall,
+        TileMapCell LeftUpperWallCorner,
+        TileMapCell RightUpperWallCorner,
+        TileMapCell LeftLowerWallCorner,
+        TileMapCell RightLowerWallCorner,
         TileMapCell Floor,
         TileMapCell Hill,
         TileMapCell Ditch,
@@ -47,7 +99,7 @@ public class Map(List<List<Map.Field>> data)
         FlagStand2,
     }
 
-    private readonly TileSetCoordinates currentTileSetCoords = GetScribbleDungeonTiles();
+    private TileSetCoordinates currentTileSetCoords = GetMinipackTiles();
 
     public static Map ReadInMap(string filename)
     {
@@ -87,6 +139,13 @@ public class Map(List<List<Map.Field>> data)
 
     public void PopulateTileMap(TileMapLayer tileMapLayer)
     {
+        currentTileSetCoords = tileMapLayer.Name.ToString() switch
+        {
+            "BaseMap" => GetScribbleDungeonTiles(),
+            "MinipackBaseMap" => GetMinipackTiles(),
+            "TopDownShooterBaseMap" => GetTopDownShooterTiles(),
+            var other => throw new NotImplementedException($"No TileSet for: {other}"),
+        };
         for (int y = 0; y < data.Count; ++y)
         {
             for (int x = 0; x < data[y].Count; ++x)
@@ -95,7 +154,16 @@ public class Map(List<List<Map.Field>> data)
                 var tileSetField = fieldValue switch
                 {
                     Field.Floor => currentTileSetCoords.Floor,
-                    Field.Wall => currentTileSetCoords.Wall,
+                    Field.Wall => GetWallPosition(x, y) switch
+                    {
+                        WallPosition.Horizontal => currentTileSetCoords.Wall,
+                        WallPosition.Vertical => currentTileSetCoords.VerticalWall,
+                        WallPosition.LeftUpperCorner => currentTileSetCoords.LeftUpperWallCorner,
+                        WallPosition.RightUpperCorner => currentTileSetCoords.RightUpperWallCorner,
+                        WallPosition.LeftLowerCorner => currentTileSetCoords.LeftLowerWallCorner,
+                        WallPosition.RightLowerCorner => currentTileSetCoords.RightLowerWallCorner,
+                        _ => throw new UnreachableException(),
+                    },
                     Field.Hill => currentTileSetCoords.Hill,
                     Field.Ditch => currentTileSetCoords.Ditch,
                     Field.Water => currentTileSetCoords.Water,
@@ -104,32 +172,7 @@ public class Map(List<List<Map.Field>> data)
                     Field.FlagStand2 => currentTileSetCoords.FlagStand2,
                     _ => throw new NotImplementedException(),
                 };
-                if (fieldValue is not Field.Wall)
-                    tileMapLayer.SetCell(new Vector2I(x, y), 3, tileSetField.AtlasCoords);
-                else
-                    switch (GetWallPosition(x, y))
-                    {
-                        case WallPosition.Vertical:
-                            tileMapLayer.SetCell(new Vector2I(x, y), 3, tileSetField.AtlasCoords);
-                            break;
-                        case WallPosition.Horizontal:
-                            tileMapLayer.SetCell(new Vector2I(x, y), 3, tileSetField.AtlasCoords, 1);
-                            break;
-                        case WallPosition.LeftUpperCorner:
-                            tileMapLayer.SetCell(new Vector2I(x, y), 3, currentTileSetCoords.WallCorner.AtlasCoords);
-                            break;
-                        case WallPosition.RightUpperCorner:
-                            tileMapLayer.SetCell(new Vector2I(x, y), 3, currentTileSetCoords.WallCorner.AtlasCoords, 1);
-                            break;
-                        case WallPosition.LeftLowerCorner:
-                            tileMapLayer.SetCell(new Vector2I(x, y), 3, currentTileSetCoords.WallCorner.AtlasCoords, 2);
-                            break;
-                        case WallPosition.RightLowerCorner:
-                            tileMapLayer.SetCell(new Vector2I(x, y), 3, currentTileSetCoords.WallCorner.AtlasCoords, 3);
-                            break;
-                        default:
-                            throw new UnreachableException();
-                    }
+                tileMapLayer.SetCell(new Vector2I(x, y), currentTileSetCoords.SourceId, tileSetField.AtlasCoords, tileSetField.AlternativeTile);
             }
         }
     }
