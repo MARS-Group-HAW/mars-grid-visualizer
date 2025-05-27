@@ -130,20 +130,8 @@ public class Map(List<List<Map.Field>> data)
 
     private static string GetMapFilename()
     {
-        string configFilename = "config.json";
-        
-        string cwd = Path.GetFileName(Directory.GetCurrentDirectory());
-        GD.Print("CWD: ", cwd);
-        
-        string pathToLasertagBox = cwd switch
-        {
-            "LaserTagBox" => ".",
-            "model-mars-laser-tag-game" => Path.Combine(".", "LaserTagBox"),
-            "Visualization" => Path.Combine("..", "LaserTagBox"),
-            _ => throw new NotImplementedException($"Unknown working directory: {cwd}")
-        };
-
-        string pathToConfigFile = Path.Combine(pathToLasertagBox, configFilename);
+        var rootDir = FindRootDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()));
+        var pathToConfigFile = Path.Combine(rootDir.FullName, "LaserTagBox", "config.json");
 
         if (!File.Exists(pathToConfigFile))
         {
@@ -152,14 +140,21 @@ public class Map(List<List<Map.Field>> data)
 
         var configJson = File.ReadAllText(pathToConfigFile);
         var config = JsonSerializer.Deserialize<LaserTagConfig>(configJson);
+        var playerBodyLayer = config?.Layers.Find(l => l.Name == "PlayerBodyLayer") ??
+                              throw new Exception("PlayerBodyLayer not found in config.");
+        return Path.Combine(rootDir.FullName, "LaserTagBox", playerBodyLayer.File);
+    }
 
-        var playerBodyLayer = config.Layers.Find(l => l.Name == "PlayerBodyLayer");
-        if (playerBodyLayer == null)
+    private static DirectoryInfo FindRootDirectory(DirectoryInfo currentDir)
+    {
+        if (Directory.Exists(Path.Combine(currentDir.FullName, "Visualization")) &&
+                Directory.Exists(Path.Combine(currentDir.FullName, "LaserTagBox")))
         {
-            throw new Exception("PlayerBodyLayer not found in config.");
+            return currentDir;
         }
-        
-        return Path.Combine(pathToLasertagBox, playerBodyLayer.File);
+
+        return FindRootDirectory(currentDir.Parent ??
+                                 throw new InvalidOperationException("No Parent of directory found."));
     }
 
 
