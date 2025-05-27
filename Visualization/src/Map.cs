@@ -131,16 +131,19 @@ public class Map(List<List<Map.Field>> data)
     private static string GetMapFilename()
     {
         string configFilename = "config.json";
-        var cwd = Directory.GetCurrentDirectory().Split("/").Last();
+        
+        string cwd = Path.GetFileName(Directory.GetCurrentDirectory());
         GD.Print("CWD: ", cwd);
-        var pathToLasertagBox = cwd switch
+        
+        string pathToLasertagBox = cwd switch
         {
-            "LaserTagBox" => "./",
-            "model-mars-laser-tag-game" => "./LaserTagBox/",
-            "Visualization" => "../LaserTagBox/",
-            _ => throw new NotImplementedException()
+            "LaserTagBox" => ".",
+            "model-mars-laser-tag-game" => Path.Combine(".", "LaserTagBox"),
+            "Visualization" => Path.Combine("..", "LaserTagBox"),
+            _ => throw new NotImplementedException($"Unknown working directory: {cwd}")
         };
-        string pathToConfigFile = $"{pathToLasertagBox}{configFilename}";
+
+        string pathToConfigFile = Path.Combine(pathToLasertagBox, configFilename);
 
         if (!File.Exists(pathToConfigFile))
         {
@@ -151,8 +154,14 @@ public class Map(List<List<Map.Field>> data)
         var config = JsonSerializer.Deserialize<LaserTagConfig>(configJson);
 
         var playerBodyLayer = config.Layers.Find(l => l.Name == "PlayerBodyLayer");
-        return $"{pathToLasertagBox}{playerBodyLayer.File}";
+        if (playerBodyLayer == null)
+        {
+            throw new Exception("PlayerBodyLayer not found in config.");
+        }
+        
+        return Path.Combine(pathToLasertagBox, playerBodyLayer.File);
     }
+
 
     public override string ToString()
     {
