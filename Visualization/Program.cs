@@ -94,6 +94,7 @@ public partial class Program : Node2D
     {
         GetTree().CallGroup("Agents", "queue_free");
         DrawAgents(parsed.Agents);
+        DrawItems(parsed.Items);
     }
 
     private void DrawAgents(List<Agent> agents)
@@ -133,5 +134,48 @@ public partial class Program : Node2D
             agentInstance.ZAsRelative = true;
             tileMapLayer.AddChild(agentInstance);
         }
+    }
+
+    private readonly Dictionary<string, Item> existingItems = [];
+
+    private void DrawItems(List<Item> items)
+    {
+        foreach (var item in items)
+        {
+            if (existingItems.ContainsKey(item.Id))
+            {
+                var oldItem = tileMapLayer.GetNode<Sprite2D>(item.Id);
+                oldItem.Position =
+                    tileMapLayer.MapToLocal(new(item.X, map.Size().Y - 1 - item.Y));
+                continue;
+            }
+
+            var atlasSource = tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0)) as TileSetAtlasSource;
+            var flag = new Sprite2D
+            {
+                Name = item.Id,
+                UniqueNameInOwner = true,
+                Position = tileMapLayer.MapToLocal(new(item.X, map.Size().Y - 1 - item.Y)),
+                Texture = atlasSource.Texture,
+                RegionEnabled = true,
+                RegionRect = item.Color switch
+                {
+                    Color.Red => atlasSource.GetTileTextureRegion(new(26, 2)),
+                    Color.Green => throw new NotImplementedException(),
+                    Color.Blue => atlasSource.GetTileTextureRegion(new(26, 7)),
+                    Color.Yellow => atlasSource.GetTileTextureRegion(new(26, 4)),
+                    Color.Grey => throw new NotImplementedException(),
+                    _ => throw new UnreachableException(),
+                },
+                ZAsRelative = true,
+                ZIndex = 2,
+            };
+            flag.AddToGroup("items");
+            existingItems[item.Id] = item;
+
+            tileMapLayer.AddChild(flag);
+
+        }
+
     }
 }

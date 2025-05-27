@@ -1,10 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://cjie0j12xbmuk"]
 
 [ext_resource type="Script" uid="uid://dh8sd0omkglqh" path="res://src/agent/Agent.cs" id="1_byrto"]
-[ext_resource type="Texture2D" uid="uid://dgrea0q7uixcy" path="res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/green_character.png" id="2_nilkv"]
+[ext_resource type="Texture2D" uid="uid://dmi37v8pxms0a" path="res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_stand.png" id="2_novgp"]
 
-[node name="Agent" type="Node2D"]
+[node name="Agent" type="Node2D" groups=["Agents"]]
 script = ExtResource("1_byrto")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_nilkv")
+rotation = 1.57079
+texture = ExtResource("2_novgp")
