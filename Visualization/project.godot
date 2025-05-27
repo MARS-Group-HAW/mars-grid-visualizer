@@ -25,6 +25,17 @@ window/stretch/mode="viewport"
 
 project/assembly_name="mmvp"
 
+[file_customization]
+
+folder_colors={
+"res://assets/": "teal",
+"res://src/": "red"
+}
+
+[global_group]
+
+Agents="Players that walk around the map."
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

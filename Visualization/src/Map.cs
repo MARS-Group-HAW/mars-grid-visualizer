@@ -62,12 +62,12 @@ public class Map(List<List<Map.Field>> data)
             LeftLowerWallCorner: new(new(9, 5)),
             RightLowerWallCorner: new(new(10, 5)),
             Floor: new(new(22, 14)),
-            Hill: new(new(4, 0)),
-            Ditch: new(new(5, 0), 1),
-            Water: new(new(19, 0)),
-            ExplosiveBarrel: new(new(18, 11)),
-            FlagStand1: new(new(17, 16)),
-            FlagStand2: new(new(18, 16))
+            Hill: new(new(26, 18)),
+            Ditch: new(new(26, 17)),
+            Water: new(new(25, 18)),
+            ExplosiveBarrel: new(new(25, 16)),
+            FlagStand1: new(new(26, 6)),
+            FlagStand2: new(new(26, 5))
         );
     }
 

@@ -107,25 +107,29 @@ public partial class Program : Node2D
                     agent.Color switch
                     {
                         Color.Red => GD.Load<Texture2D>(
-                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/red_character.png"),
+                            "res://assets/kenney_top-down-shooter/PNG/Robot 1/robot1_machine.png"),
                         Color.Green => GD.Load<Texture2D>(
-                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/green_character.png"),
+                            "res://assets/kenney_top-down-shooter/PNG/Woman Green/womanGreen_machine.png"),
                         Color.Blue => GD.Load<Texture2D>(
-                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/purple_character.png"),
+                            "res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
                         Color.Yellow => GD.Load<Texture2D>(
-                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/Characters/yellow_character.png"),
+                            "res://assets/kenney_top-down-shooter/PNG/Man Brown/manBrown_machine.png"),
                         Color.Grey => GD.Load<Texture2D>(
-                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/campfire.png"),
+                            "res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
                         _ => throw new UnreachableException(),
                     };
             else
             {
-                agentInstance.GetNode<Sprite2D>("Sprite2D").Texture = GD.Load<Texture2D>(
-                            "res://assets/kenney_scribble-dungeons/PNG/Default (64px)/campfire.png");
+                var atlasSource = tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0)) as TileSetAtlasSource;
+                var sprite = agentInstance.GetNode<Sprite2D>("Sprite2D");
+                sprite.Texture = atlasSource.Texture;
+                sprite.RegionEnabled = true;
+                sprite.RegionRect = atlasSource.GetTileTextureRegion(new(25, 19));
+                sprite.RotationDegrees += 270;
                 agent.Color = Color.Grey;
             }
 
-            agentInstance.ZIndex = 99;
+            agentInstance.ZIndex = 1;
             agentInstance.ZAsRelative = true;
             tileMapLayer.AddChild(agentInstance);
         }
