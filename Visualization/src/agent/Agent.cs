@@ -34,7 +34,7 @@ public partial class Agent : Node2D
     [JsonPropertyName("color")]
     public Color Color { get; set; } = Color.Grey;
     [JsonPropertyName("team")]
-    public string Team { get; set; } = null;
+    public string Team { get; set; } = "";
     [JsonPropertyName("visualRange")]
     public int VisualRange { get; set; } = 10;
     [JsonPropertyName("gotShot")]
