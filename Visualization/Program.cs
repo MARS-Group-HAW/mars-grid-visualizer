@@ -15,9 +15,9 @@ public partial class Program : Node2D
 
     private WebSocketPeer socket = new();
     private int currentTick = 1;
-    private TileMapLayer tileMapLayer;
+    private TileMapLayer? tileMapLayer;
     private bool webSocketConnection;
-    private Map map;
+    private Map? map;
 
     public override void _Ready()
     {
@@ -113,7 +113,7 @@ public partial class Program : Node2D
         foreach (var agent in agents)
         {
             var agentInstance = (Node2D)agentScene.Instantiate();
-            agentInstance.Position = tileMapLayer.MapToLocal(new(agent.X, map.Size().Y - 1 - agent.Y));
+            agentInstance.Position = tileMapLayer!.MapToLocal(new(agent.X, map!.Size().Y - 1 - agent.Y));
             if (agent.Alive)
                 agentInstance.GetNode<Sprite2D>("Sprite2D").Texture =
                     agent.Color switch
@@ -155,18 +155,18 @@ public partial class Program : Node2D
         {
             if (existingItems.ContainsKey(item.Id))
             {
-                var oldItem = tileMapLayer.GetNode<Sprite2D>(item.Id);
+                var oldItem = tileMapLayer!.GetNode<Sprite2D>(item.Id);
                 oldItem.Position =
-                    tileMapLayer.MapToLocal(new(item.X, map.Size().Y - 1 - item.Y));
+                    tileMapLayer.MapToLocal(new(item.X, map!.Size().Y - 1 - item.Y));
                 continue;
             }
 
-            var atlasSource = tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0)) as TileSetAtlasSource;
+            var atlasSource = tileMapLayer!.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0)) as TileSetAtlasSource;
             var flag = new Sprite2D
             {
                 Name = item.Id,
                 UniqueNameInOwner = true,
-                Position = tileMapLayer.MapToLocal(new(item.X, map.Size().Y - 1 - item.Y)),
+                Position = tileMapLayer.MapToLocal(new(item.X, map!.Size().Y - 1 - item.Y)),
                 Texture = atlasSource.Texture,
                 RegionEnabled = true,
                 RegionRect = item.Color switch
