@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 using System.Text.Json.Serialization;
+using System.Diagnostics;
 
 namespace mmvp.src.agent;
 
@@ -13,6 +14,22 @@ public enum Color
     Blue,
     Yellow,
     Grey,
+}
+
+public static class ColorMethods
+{
+    public static string ColorToHtml(this Color color)
+    {
+        return color switch
+        {
+            Color.Red => "#e86a17",
+            Color.Green => "#27ae60",
+            Color.Blue => "#2a87bc",
+            Color.Yellow => "#ffcc00",
+            Color.Grey => "#5f5f5f",
+            _ => throw new UnreachableException(),
+        };
+    }
 }
 
 
@@ -64,7 +81,6 @@ public class AgentJsonData
     [JsonPropertyName("explosiveBarrels")]
     public List<Barrel> Barrels { get; set; } = [];
 
-    // FIXME: for some reason scores are empty
     [JsonPropertyName("scores")]
     public List<Score> Scores { get; set; } = [];
 }
@@ -92,8 +108,15 @@ public enum ItemType
 
 public class Score
 {
+    [JsonPropertyName("teamName")]
     public string TeamName { get; set; } = "";
-    public Color TeamColor;
+    [JsonPropertyName("teamColor")]
+    public Color TeamColor { get; set; } = Color.Grey;
     [JsonPropertyName("score")]
-    public int TeamScore;
+    public int TeamScore { get; set; } = 0;
+
+    public override string ToString()
+    {
+        return $"Score {{ {TeamName}, {TeamScore} }}";
+    }
 }

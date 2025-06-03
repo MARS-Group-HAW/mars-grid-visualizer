@@ -74,8 +74,10 @@ public partial class Program : Node2D
                     continue;
                 }
                 var parsed = JsonSerializer.Deserialize<AgentJsonData>(message, jsonOptions);
+                if (parsed == null) { GD.Print("could not serialize json to AgentJsonData"); continue; }
 
                 if (currentTick != parsed.ExpectingTick) currentTick = parsed.ExpectingTick;
+                UpdateScores(parsed.Scores);
                 DrawGame(parsed);
                 GD.Print("currentTick: ", currentTick);
                 socket.SendText(currentTick.ToString());
@@ -88,6 +90,15 @@ public partial class Program : Node2D
             GD.Print($"WebSocket closed with code: {socket.GetCloseCode()} and reason: {socket.GetCloseReason()}");
             SetProcess(false);
         }
+    }
+
+    private void UpdateScores(List<Score> scores)
+    {
+        var scoreNode = GetNode<RichTextLabel>("%Score");
+        var newText = string.Join("\n", scores.Select(s =>
+                    $"[color={s.TeamColor.ColorToHtml()}]{s.TeamName}: {s.TeamScore}[/color]"));
+        GD.Print("SCORE: ", string.Join(" ", scores.Select(s => s.TeamScore)));
+        scoreNode.Text = newText;
     }
 
     private void DrawGame(AgentJsonData parsed)
