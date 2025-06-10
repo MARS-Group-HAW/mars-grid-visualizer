@@ -10,7 +10,7 @@ public static class DebugExtensions
         WriteIndented = true,
     };
 
-    public static T Dbg<T>(this T obj, string label = null,
+    public static T Dbg<T>(this T obj, string? label = null,
                           [System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
                           [System.Runtime.CompilerServices.CallerFilePath] string filePath = "",
                           [System.Runtime.CompilerServices.CallerLineNumber] int lineNumber = 0)

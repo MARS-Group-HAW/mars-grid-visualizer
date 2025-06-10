@@ -5,9 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://dwvd2qhufcsif" path="res://assets/kenney_top-down-shooter/Tilesheet/tilesheet_complete.png" id="4_1bvp3"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1bvp3"]
-font_size = 252
+font_size = 120
 font_color = Color(0.867441, 0.291424, 0.153771, 1)
-outline_size = 42
+outline_size = 39
 outline_color = Color(0.47876, 0.133588, 0.0491394, 1)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lquwl"]
@@ -566,25 +566,17 @@ script = ExtResource("1_ig7tw")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 107.0
-offset_top = 263.0
-offset_right = 837.0
-offset_bottom = 263.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.506425, 0.506425)
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="CanvasLayer/CenterContainer"]
+[node name="MapNotFoundLabel" type="Label" parent="CanvasLayer/CenterContainer"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Map Not Found"
 label_settings = SubResource("LabelSettings_1bvp3")
-
-[node name="TopDownShooterBaseMap" type="TileMapLayer" parent="CanvasLayer"]
-unique_name_in_owner = true
-texture_filter = 1
-scale = Vector2(0.346013, 0.346013)
-tile_map_data = PackedByteArray("AAAQAAAAAwARAAcAAAARAAAAAwARAAcAAAASAAAAAwARAAcAAAATAAAAAwARAAcAAAAUAAAAAwARAAcAAAAVAAAAAwARAAcAAAAWAAAAAwARAAcAAAAXAAAAAwARAAcAAAAYAAAAAwARAAcAAAAZAAAAAwARAAcAAAAaAAAAAwARAAcAAAAbAAAAAwARAAcAAAAcAAAAAwARAAcAAAAdAAAAAwARAAcAAAAeAAAAAwARAAcAAAAfAAAAAwARAAcAAAAgAAAAAwARAAcAAAAhAAAAAwARAAcAAAAiAAAAAwARAAcAAAAjAAAAAwARAAcAAAAkAAAAAwARAAcAAAAlAAAAAwARAAcAAAAmAAAAAwARAAcAAAAnAAAAAwARAAcAAAAoAAAAAwARAAcAAAApAAAAAwARAAcAAAAqAAAAAwARAAcAAAArAAAAAwARAAcAAAAsAAAAAwARAAcAAAAtAAAAAwARAAcAAAAuAAAAAwARAAcAAAAvAAAAAwARAAcAAAAwAAAAAwARAAcAAAAxAAAAAwARAAcAAAAyAAAAAwARAAcAAAAzAAAAAwARAAcAAAAAABsAAwAFAAcAAAAAABwAAwAFAAcAAAAAAB0AAwAFAAcAAAAAAB4AAwAFAAcAAAAAAB8AAwAFAAcAAAAAACAAAwAFAAcAAAAAACEAAwAFAAcAAAAAACIAAwAFAAcAAAAAACMAAwAFAAcAAAAAACQAAwAFAAcAAAAAACUAAwAFAAcAAAAAACYAAwAFAAcAAAAAACcAAwAFAAcAAAAAACgAAwAFAAcAAAAAACkAAwAFAAcAAAAAACoAAwAFAAcAAAAAACsAAwAFAAcAAAAAACwAAwAFAAcAAAAAAC0AAwAFAAcAAAAAAC4AAwAFAAcAAAAAAC8AAwAFAAcAAAAAADAAAwAFAAcAAAAAADEAAwAFAAcAAAAAADIAAwAFAAcAAAAAADMAAwAFAAcAAAA=")
-tile_set = SubResource("TileSet_7mycd")
 
 [node name="Control" type="Control" parent="CanvasLayer"]
 layout_mode = 3
@@ -593,26 +585,26 @@ offset_top = 6.0
 offset_right = 389.0
 offset_bottom = 274.0
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Control"]
+[node name="ScorePanelContainer" type="PanelContainer" parent="CanvasLayer/Control"]
 layout_mode = 0
 offset_left = 30.0
 offset_top = 23.0
 offset_right = 258.0
 offset_bottom = 184.0
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control/PanelContainer"]
+[node name="ScoreMarginContainer" type="MarginContainer" parent="CanvasLayer/Control/ScorePanelContainer"]
 layout_mode = 2
 theme = ExtResource("3_h2yge")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/PanelContainer/MarginContainer"]
+[node name="ScoreVBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/ScorePanelContainer/ScoreMarginContainer"]
 layout_mode = 2
 theme = ExtResource("3_h2yge")
 
-[node name="Label" type="Label" parent="CanvasLayer/Control/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="ScoreLabel" type="Label" parent="CanvasLayer/Control/ScorePanelContainer/ScoreMarginContainer/ScoreVBoxContainer"]
 layout_mode = 2
 text = "Score:"
 
-[node name="Score" type="RichTextLabel" parent="CanvasLayer/Control/PanelContainer/MarginContainer/VBoxContainer"]
+[node name="Score" type="RichTextLabel" parent="CanvasLayer/Control/ScorePanelContainer/ScoreMarginContainer/ScoreVBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("3_h2yge")
@@ -620,4 +612,21 @@ bbcode_enabled = true
 text = "Score"
 fit_content = true
 
+[node name="ConfigFilePopup" type="FileDialog" parent="CanvasLayer"]
+unique_name_in_owner = true
+title = "select a config.json file"
+initial_position = 2
+size = Vector2i(833, 360)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+
+[node name="TopDownShooterBaseMap" type="TileMapLayer" parent="."]
+unique_name_in_owner = true
+texture_filter = 1
+scale = Vector2(0.346013, 0.346013)
+tile_map_data = PackedByteArray("AAAQAAAAAwARAAcAAAARAAAAAwARAAcAAAASAAAAAwARAAcAAAATAAAAAwARAAcAAAAUAAAAAwARAAcAAAAVAAAAAwARAAcAAAAWAAAAAwARAAcAAAAXAAAAAwARAAcAAAAYAAAAAwARAAcAAAAZAAAAAwARAAcAAAAaAAAAAwARAAcAAAAbAAAAAwARAAcAAAAcAAAAAwARAAcAAAAdAAAAAwARAAcAAAAeAAAAAwARAAcAAAAfAAAAAwARAAcAAAAgAAAAAwARAAcAAAAhAAAAAwARAAcAAAAiAAAAAwARAAcAAAAjAAAAAwARAAcAAAAkAAAAAwARAAcAAAAlAAAAAwARAAcAAAAmAAAAAwARAAcAAAAnAAAAAwARAAcAAAAoAAAAAwARAAcAAAApAAAAAwARAAcAAAAqAAAAAwARAAcAAAArAAAAAwARAAcAAAAsAAAAAwARAAcAAAAtAAAAAwARAAcAAAAuAAAAAwARAAcAAAAvAAAAAwARAAcAAAAwAAAAAwARAAcAAAAxAAAAAwARAAcAAAAyAAAAAwARAAcAAAAzAAAAAwARAAcAAAAAABsAAwAFAAcAAAAAABwAAwAFAAcAAAAAAB0AAwAFAAcAAAAAAB4AAwAFAAcAAAAAAB8AAwAFAAcAAAAAACAAAwAFAAcAAAAAACEAAwAFAAcAAAAAACIAAwAFAAcAAAAAACMAAwAFAAcAAAAAACQAAwAFAAcAAAAAACUAAwAFAAcAAAAAACYAAwAFAAcAAAAAACcAAwAFAAcAAAAAACgAAwAFAAcAAAAAACkAAwAFAAcAAAAAACoAAwAFAAcAAAAAACsAAwAFAAcAAAAAACwAAwAFAAcAAAAAAC0AAwAFAAcAAAAAAC4AAwAFAAcAAAAAAC8AAwAFAAcAAAAAADAAAwAFAAcAAAAAADEAAwAFAAcAAAAAADIAAwAFAAcAAAAAADMAAwAFAAcAAAA=")
+tile_set = SubResource("TileSet_7mycd")
+
 [node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0

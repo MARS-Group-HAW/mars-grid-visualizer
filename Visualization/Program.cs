@@ -19,13 +19,9 @@ public partial class Program : Node2D
     private bool webSocketConnection;
     private Map? map;
 
-    public override void _Ready()
+    public override async void _Ready()
     {
-        // TODO: properly find map path
-        // TODO: move path into map class
-        map = Map.ReadInMap();
-        // GD.Print("Map: \n", map);
-
+        map = await LoadMap();
 
         tileMapLayer = GetNode<TileMapLayer>("%TopDownShooterBaseMap");
         map.PopulateTileMap(tileMapLayer);
@@ -49,9 +45,25 @@ public partial class Program : Node2D
         }
     }
 
+    private async Task<Map> LoadMap()
+    {
+        var configPath = Map.GetConfigPath();
+        if (configPath is null)
+        {
+            GetNode<Label>("%MapNotFoundLabel").Show();
+            var fileDialog = GetNode<FileDialog>("%ConfigFilePopup");
+            fileDialog.Show();
+            var result = await ToSignal(fileDialog, FileDialog.SignalName.FileSelected);
+            configPath = result[0].AsString();
+        }
+
+        GetNode<Label>("%MapNotFoundLabel").Hide();
+        return Map.ReadInMap(configPath);
+    }
+
     private void ConnectWebSocket()
     {
-        if (socket.ConnectToUrl("ws://127.0.0.1:8181") != Godot.Error.Ok)
+        if (socket.ConnectToUrl("ws://127.0.0.1:8181") != Error.Ok)
         {
             GD.Print("Could not connect to WebSocket Server. Is the Simulation running?");
             GetTree().Quit();
@@ -97,7 +109,6 @@ public partial class Program : Node2D
         var scoreNode = GetNode<RichTextLabel>("%Score");
         var newText = string.Join("\n", scores.Select(s =>
                     $"[color={s.TeamColor.ColorToHtml()}]{s.TeamName}: {s.TeamScore}[/color]"));
-        GD.Print("SCORE: ", string.Join(" ", scores.Select(s => s.TeamScore)));
         scoreNode.Text = newText;
     }
 

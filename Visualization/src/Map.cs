@@ -103,10 +103,23 @@ public class Map(List<List<Map.Field>> data)
 
     private TileSetCoordinates currentTileSetCoords = GetMinipackTiles();
 
-    public static Map ReadInMap()
+    public static string? GetConfigPath()
     {
-        var mapPath = GetMapFilename();
-        var lines = File.ReadAllLines(mapPath);
+        var rootDir = FindRootDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()));
+        if (rootDir is null) return null;
+        var pathToConfigFile = Path.Combine(rootDir.FullName, "LaserTagBox", "config.json");
+
+        if (!File.Exists(pathToConfigFile)) return null;
+
+        return pathToConfigFile;
+    }
+
+    public static Map ReadInMap(string configPath)
+    {
+        var mapPath = GetMapPath(configPath);
+
+        // FIXME: handle null
+        var lines = File.ReadAllLines(mapPath!);
         var mapData = lines.Select(line => line.Split(';')
                 .Select(field => field switch
                 {
@@ -118,7 +131,7 @@ public class Map(List<List<Map.Field>> data)
                     "5" => Field.ExplosiveBarrel,
                     "7" => Field.FlagStandRed,
                     "8" => Field.FlagStandYellow,
-                    _ => throw new ArgumentException("Encountered an unknown map field."),
+                    var any => throw new ArgumentException($"Encountered an unknown map field: '{any}'"),
                 })
                 .ToList())
             .ToList();
@@ -126,33 +139,24 @@ public class Map(List<List<Map.Field>> data)
         return new Map(mapData);
     }
 
-    private static string GetMapFilename()
+    private static string? GetMapPath(string configPath)
     {
-        var rootDir = FindRootDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()));
-        var pathToConfigFile = Path.Combine(rootDir.FullName, "LaserTagBox", "config.json");
-
-        if (!File.Exists(pathToConfigFile))
-        {
-            throw new FileNotFoundException($"Config file {pathToConfigFile} does not exist");
-        }
-
-        var configJson = File.ReadAllText(pathToConfigFile);
+        var rootDir = Directory.GetParent(configPath)!.Parent!;
+        var configJson = File.ReadAllText(configPath);
         var config = JsonSerializer.Deserialize<LaserTagConfig>(configJson);
         var playerBodyLayer = config?.Layers.Find(l => l.Name == "PlayerBodyLayer") ??
                               throw new Exception("PlayerBodyLayer not found in config.");
         return Path.Combine(rootDir.FullName, "LaserTagBox", playerBodyLayer.File);
     }
 
-    private static DirectoryInfo FindRootDirectory(DirectoryInfo currentDir)
+    private static DirectoryInfo? FindRootDirectory(DirectoryInfo currentDir)
     {
-        if (Directory.Exists(Path.Combine(currentDir.FullName, "Visualization")) &&
-                Directory.Exists(Path.Combine(currentDir.FullName, "LaserTagBox")))
+        if (Directory.Exists(Path.Combine(currentDir.FullName, "LaserTagBox")))
         {
             return currentDir;
         }
 
-        return FindRootDirectory(currentDir.Parent ??
-                                 throw new InvalidOperationException("No Parent of directory found."));
+        return currentDir.Parent is not null ? FindRootDirectory(currentDir.Parent) : null;
     }
 
 
