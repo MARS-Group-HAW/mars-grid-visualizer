@@ -143,7 +143,7 @@ public partial class Program : Node2D
                     };
             else
             {
-                var atlasSource = tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0)) as TileSetAtlasSource;
+                var atlasSource = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
                 var sprite = agentInstance.GetNode<Sprite2D>("Sprite2D");
                 sprite.Texture = atlasSource.Texture;
                 sprite.RegionEnabled = true;
@@ -172,7 +172,7 @@ public partial class Program : Node2D
                 continue;
             }
 
-            var atlasSource = tileMapLayer!.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0)) as TileSetAtlasSource;
+            var atlasSource = (TileSetAtlasSource)tileMapLayer!.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
             var flag = new Sprite2D
             {
                 Name = item.Id,
