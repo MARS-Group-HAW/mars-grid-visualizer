@@ -1,0 +1,36 @@
+# Whenever a tag push matching pattern "v*" then run the job
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  export_visualization:
+    # Always use ubuntu-latest for this action
+    runs-on: ubuntu-latest
+    permissions: write-all
+    name: Export Visualization
+    steps:
+      # include the checkout step so that
+      # the project is available for Godot to export
+    - name: checkout
+      uses: actions/checkout@v4
+  
+    - name: export visualization
+      id: export
+      uses: firebelley/godot-export@v6.0.0
+      with:
+        godot_executable_download_url: https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_mono_linux_x86_64.zip
+        godot_export_templates_download_url: https://github.com/godotengine/godot/releases/download/4.4.1-stable/Godot_v4.4.1-stable_mono_export_templates.tpz
+        relative_project_path: ./
+        archive_output: true
+
+      # https://github.com/ncipollo/release-action
+    - name: create release
+      uses: ncipollo/release-action@v1.14.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        generateReleaseNotes: true
+        tag: ${{ github.ref_name }}
+        artifacts: ${{ steps.export.outputs.archive_directory }}/*
