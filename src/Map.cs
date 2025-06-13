@@ -24,8 +24,8 @@ public class Map(List<List<Map.Field>> data)
             Ditch: new(new(0, 0), 1),
             Water: new(new(0, 0), 2),
             ExplosiveBarrel: new(new(5, 2)),
-            FlagStandRed: new(new(1, 8)),
-            FlagStandYellow: new(new(3, 8))
+            FlagStand1: new(new(1, 8)),
+            FlagStand2: new(new(3, 8))
         );
     }
 
@@ -45,8 +45,8 @@ public class Map(List<List<Map.Field>> data)
             Ditch: new(new(4, 2), 1),
             Water: new(new(0, 3)),
             ExplosiveBarrel: new(new(3, 2)),
-            FlagStandRed: new(new(1, 8)),
-            FlagStandYellow: new(new(3, 8))
+            FlagStand1: new(new(1, 8)),
+            FlagStand2: new(new(3, 8))
         );
     }
 
@@ -66,8 +66,8 @@ public class Map(List<List<Map.Field>> data)
             Ditch: new(new(26, 17)),
             Water: new(new(25, 18)),
             ExplosiveBarrel: new(new(25, 16)),
-            FlagStandRed: new(new(26, 3)),
-            FlagStandYellow: new(new(26, 5))
+            FlagStand1: new(new(26, 1)),
+            FlagStand2: new(new(26, 1))
         );
     }
 
@@ -84,8 +84,8 @@ public class Map(List<List<Map.Field>> data)
         TileMapCell Ditch,
         TileMapCell Water,
         TileMapCell ExplosiveBarrel,
-        TileMapCell FlagStandRed,
-        TileMapCell FlagStandYellow);
+        TileMapCell FlagStand1,
+        TileMapCell FlagStand2);
 
     private record TileMapCell(Vector2I AtlasCoords, int AlternativeTile = 0);
 
@@ -208,8 +208,8 @@ public class Map(List<List<Map.Field>> data)
                     Field.Ditch => currentTileSetCoords.Ditch,
                     Field.Water => currentTileSetCoords.Water,
                     Field.ExplosiveBarrel => currentTileSetCoords.ExplosiveBarrel,
-                    Field.FlagStandRed => currentTileSetCoords.FlagStandRed,
-                    Field.FlagStandYellow => currentTileSetCoords.FlagStandYellow,
+                    Field.FlagStandRed => currentTileSetCoords.FlagStand1,
+                    Field.FlagStandYellow => currentTileSetCoords.FlagStand2,
                     _ => throw new NotImplementedException(),
                 };
                 tileMapLayer.SetCell(new Vector2I(x, y), currentTileSetCoords.SourceId, tileSetField.AtlasCoords, tileSetField.AlternativeTile);
