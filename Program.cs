@@ -126,21 +126,7 @@ public partial class Program : Node2D
             var agentInstance = (Node2D)agentScene.Instantiate();
             agentInstance.Position = tileMapLayer!.MapToLocal(new(agent.X, map!.Size().Y - 1 - agent.Y));
             if (agent.Alive)
-                agentInstance.GetNode<Sprite2D>("Sprite2D").Texture =
-                    agent.Color switch
-                    {
-                        Color.Red => GD.Load<Texture2D>(
-                            "res://assets/kenney_top-down-shooter/PNG/Robot 1/robot1_machine.png"),
-                        Color.Green => GD.Load<Texture2D>(
-                            "res://assets/kenney_top-down-shooter/PNG/Woman Green/womanGreen_machine.png"),
-                        Color.Blue => GD.Load<Texture2D>(
-                            "res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
-                        Color.Yellow => GD.Load<Texture2D>(
-                            "res://assets/kenney_top-down-shooter/PNG/Man Brown/manBrown_machine.png"),
-                        Color.Grey => GD.Load<Texture2D>(
-                            "res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
-                        _ => throw new UnreachableException(),
-                    };
+                agentInstance.GetNode<Sprite2D>("Sprite2D").Texture = agent.GetSprite();
             else
             {
                 var atlasSource = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));

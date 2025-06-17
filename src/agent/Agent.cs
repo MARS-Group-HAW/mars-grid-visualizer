@@ -42,6 +42,8 @@ public partial class Agent : Node2D
         Creeping,
     }
 
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = "00000000-0000-0000-0000-000000000000";
     [JsonPropertyName("x")]
     public int X { get; set; }
     [JsonPropertyName("y")]
@@ -64,6 +66,24 @@ public partial class Agent : Node2D
     {
         X = x;
         Y = y;
+    }
+
+    public Texture2D GetSprite()
+    {
+        return Color switch
+        {
+            Color.Red => GD.Load<Texture2D>(
+                "res://assets/agents/red/manRed_machine.png"),
+            Color.Green => GD.Load<Texture2D>(
+                "res://assets/kenney_top-down-shooter/PNG/Woman Green/womanGreen_machine.png"),
+            Color.Blue => GD.Load<Texture2D>(
+                "res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
+            Color.Yellow => GD.Load<Texture2D>(
+                "res://assets/agents/yellow/manYellow_machine.png"),
+            Color.Grey => GD.Load<Texture2D>(
+                "res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
+            _ => throw new UnreachableException(),
+        };
     }
 }
 
