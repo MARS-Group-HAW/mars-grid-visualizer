@@ -47,6 +47,29 @@ public partial class Program : Node2D
         }
     }
 
+    private static Line2D DrawCircle(Vector2 position, float radius, Color color)
+    {
+        var line = new Line2D
+        {
+            Position = position,
+            Width = 3,
+            Antialiased = true,
+            DefaultColor = Godot.Color.FromHtml(color.ColorToHtml())
+        };
+
+        for (int i = 0; i < 361; i++)
+        {
+            var angle = Mathf.DegToRad((float)(1.0 * i));
+            line.AddPoint(CalcPointOnCircle(angle, radius));
+        }
+        return line;
+    }
+
+    private static Vector2 CalcPointOnCircle(float angle, float radius)
+    {
+        return new Vector2(Mathf.Sin(angle) * radius, Mathf.Cos(angle) * radius);
+    }
+
     private async Task<Map> LoadMap()
     {
         var configPath = Map.GetConfigPath();
@@ -138,6 +161,7 @@ public partial class Program : Node2D
                 headStoneSprite.RotationDegrees += 270;
                 agent.Color = Color.Grey;
             }
+            agentInstance.AddChild(DrawCircle(agent.Position, agent.VisualRange * 16, agent.Color));
 
             agentInstance.ZIndex = 1;
             agentInstance.ZAsRelative = true;
