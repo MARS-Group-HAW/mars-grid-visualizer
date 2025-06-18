@@ -2,3 +2,12 @@
 .godot/
 /android/
 /export/
+
+# C# compilation artifacts
+**/bin/
+**/obj/
+
+# editor specifig files
+.idea
+.Rhistory
+.DS_store
