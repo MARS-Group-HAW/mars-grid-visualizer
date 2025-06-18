@@ -140,8 +140,10 @@ public partial class Program : Node2D
     private void DrawGame(AgentJsonData parsed)
     {
         GetTree().CallGroup("Agents", "queue_free");
+        GetTree().CallGroup("Barrels", "queue_free");
         DrawAgents(parsed.Agents);
         DrawItems(parsed.Items);
+        DrawBarrels(parsed.Barrels);
     }
 
     private void DrawAgents(List<Agent> agents)
@@ -209,5 +211,29 @@ public partial class Program : Node2D
 
         }
 
+    }
+    private void DrawBarrels(List<Barrel> barrels)
+    {
+        foreach (var barrel in barrels)
+        {
+            var barrelSprite = new Sprite2D
+            {
+                Name = barrel.Id,
+                UniqueNameInOwner = true,
+                Position = tileMapLayer!.MapToLocal(new(barrel.X, map!.Size().Y - 1 - barrel.Y)),
+                Texture = tileSetSpritesheet!.Texture,
+                RegionEnabled = true,
+                RegionRect = barrel.HasExploded
+                    ? tileSetSpritesheet.GetTileTextureRegion(new(25, 17))
+                    : tileSetSpritesheet.GetTileTextureRegion(new(25, 16)),
+            };
+            tileMapLayer.AddChild(barrelSprite);
+            if (barrel.HasExploded)
+                GetTree().CreateTimer(2.0f).Timeout += () =>
+                    barrelSprite.RegionRect = tileSetSpritesheet.GetTileTextureRegion(new(26, 16));
+
+            barrelSprite.AddToGroup("Barrels");
+
+        }
     }
 }
