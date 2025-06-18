@@ -17,6 +17,7 @@ public partial class Program : Node2D
     private int currentTick = 1;
     private TileMapLayer? tileMapLayer;
     private bool webSocketConnection;
+    private TileSetAtlasSource? tileSetSpritesheet;
     private Map? map;
 
     public override async void _Ready()
@@ -24,6 +25,7 @@ public partial class Program : Node2D
         map = await LoadMap();
 
         tileMapLayer = GetNode<TileMapLayer>("%TopDownShooterBaseMap");
+        tileSetSpritesheet = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
         map.PopulateTileMap(tileMapLayer);
 
         ConnectWebSocket();
@@ -91,7 +93,7 @@ public partial class Program : Node2D
                 if (currentTick != parsed.ExpectingTick) currentTick = parsed.ExpectingTick;
                 UpdateScores(parsed.Scores);
                 DrawGame(parsed);
-                GD.Print("currentTick: ", currentTick);
+                if (currentTick % 100 == 0) GD.Print("currentTick: ", currentTick);
                 socket.SendText(currentTick.ToString());
                 currentTick += 1;
             }
@@ -129,12 +131,11 @@ public partial class Program : Node2D
                 agentInstance.GetNode<Sprite2D>("Sprite2D").Texture = agent.GetSprite();
             else
             {
-                var atlasSource = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
-                var sprite = agentInstance.GetNode<Sprite2D>("Sprite2D");
-                sprite.Texture = atlasSource.Texture;
-                sprite.RegionEnabled = true;
-                sprite.RegionRect = atlasSource.GetTileTextureRegion(new(25, 19));
-                sprite.RotationDegrees += 270;
+                var headStoneSprite = agentInstance.GetNode<Sprite2D>("Sprite2D");
+                headStoneSprite.Texture = tileSetSpritesheet!.Texture;
+                headStoneSprite.RegionEnabled = true;
+                headStoneSprite.RegionRect = tileSetSpritesheet.GetTileTextureRegion(new(25, 19));
+                headStoneSprite.RotationDegrees += 270;
                 agent.Color = Color.Grey;
             }
 
@@ -158,20 +159,19 @@ public partial class Program : Node2D
                 continue;
             }
 
-            var atlasSource = (TileSetAtlasSource)tileMapLayer!.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
             var flag = new Sprite2D
             {
                 Name = item.Id,
                 UniqueNameInOwner = true,
-                Position = tileMapLayer.MapToLocal(new(item.X, map!.Size().Y - 1 - item.Y)),
-                Texture = atlasSource.Texture,
+                Position = tileMapLayer!.MapToLocal(new(item.X, map!.Size().Y - 1 - item.Y)),
+                Texture = tileSetSpritesheet!.Texture,
                 RegionEnabled = true,
                 RegionRect = item.Color switch
                 {
-                    Color.Red => atlasSource.GetTileTextureRegion(new(26, 2)),
+                    Color.Red => tileSetSpritesheet.GetTileTextureRegion(new(26, 2)),
                     Color.Green => throw new NotImplementedException(),
-                    Color.Blue => atlasSource.GetTileTextureRegion(new(26, 7)),
-                    Color.Yellow => atlasSource.GetTileTextureRegion(new(26, 4)),
+                    Color.Blue => tileSetSpritesheet.GetTileTextureRegion(new(26, 7)),
+                    Color.Yellow => tileSetSpritesheet.GetTileTextureRegion(new(26, 4)),
                     Color.Grey => throw new NotImplementedException(),
                     _ => throw new UnreachableException(),
                 },

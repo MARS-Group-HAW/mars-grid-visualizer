@@ -615,9 +615,10 @@ fit_content = true
 
 [node name="ConfigFilePopup" type="FileDialog" parent="CanvasLayer"]
 unique_name_in_owner = true
-title = "select a config.json file"
+title = "Select a config.json file"
 initial_position = 2
 size = Vector2i(833, 360)
+theme = ExtResource("3_h2yge")
 ok_button_text = "Open"
 file_mode = 0
 access = 2
