@@ -198,7 +198,7 @@ public partial class Program : Node2D
                     Color.Green => throw new NotImplementedException(),
                     Color.Blue => tileSetSpritesheet.GetTileTextureRegion(new(26, 7)),
                     Color.Yellow => tileSetSpritesheet.GetTileTextureRegion(new(26, 4)),
-                    Color.Grey => throw new NotImplementedException(),
+                    Color.Grey => tileSetSpritesheet.GetTileTextureRegion(new(26, 1)),
                     _ => throw new UnreachableException(),
                 },
                 ZAsRelative = true,
