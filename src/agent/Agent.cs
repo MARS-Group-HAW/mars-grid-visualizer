@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Godot;
 using System.Text.Json.Serialization;
 using System.Diagnostics;
@@ -31,7 +29,6 @@ public static class ColorMethods
         };
     }
 }
-
 
 public partial class Agent : Node2D
 {
@@ -67,16 +64,11 @@ public partial class Agent : Node2D
     {
         return Color switch
         {
-            Color.Red => GD.Load<Texture2D>(
-                "res://assets/agents/red/manRed_machine.png"),
-            Color.Green => GD.Load<Texture2D>(
-                "res://assets/kenney_top-down-shooter/PNG/Woman Green/womanGreen_machine.png"),
-            Color.Blue => GD.Load<Texture2D>(
-                "res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
-            Color.Yellow => GD.Load<Texture2D>(
-                "res://assets/agents/yellow/manYellow_machine.png"),
-            Color.Grey => GD.Load<Texture2D>(
-                "res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
+            Color.Red => GD.Load<Texture2D>("res://assets/agents/red/manRed_machine.png"),
+            Color.Green => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Woman Green/womanGreen_machine.png"),
+            Color.Blue => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
+            Color.Yellow => GD.Load<Texture2D>("res://assets/agents/yellow/manYellow_machine.png"),
+            Color.Grey => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
             _ => throw new UnreachableException(),
         };
     }
@@ -101,13 +93,13 @@ public class AgentJsonData
 }
 
 public record Item(
-  [property: JsonPropertyName("id")] string Id,
-  [property: JsonPropertyName("x")] int X,
-  [property: JsonPropertyName("y")] int Y,
-  [property: JsonPropertyName("color")] Color Color,
-  [property: JsonPropertyName("type")] ItemType Type,
-  [property: JsonPropertyName("pickedUp")] bool PickedUp,
-  [property: JsonPropertyName("ownerID")] string OwnerId);
+    [property: JsonPropertyName("id")] string Id,
+    [property: JsonPropertyName("x")] int X,
+    [property: JsonPropertyName("y")] int Y,
+    [property: JsonPropertyName("color")] Color Color,
+    [property: JsonPropertyName("type")] ItemType Type,
+    [property: JsonPropertyName("pickedUp")] bool PickedUp,
+    [property: JsonPropertyName("ownerID")] string OwnerId);
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ItemType
