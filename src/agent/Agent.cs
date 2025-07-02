@@ -105,12 +105,6 @@ public class AgentJsonData
     public List<Score> Scores { get; set; } = [];
 }
 
-public record Barrel(
-        [property: JsonPropertyName("id")] string Id,
-        [property: JsonPropertyName("x")] int X,
-        [property: JsonPropertyName("y")] int Y,
-        [property: JsonPropertyName("hasExploded")] bool HasExploded);
-
 public record Item(
   [property: JsonPropertyName("id")] string Id,
   [property: JsonPropertyName("x")] int X,
