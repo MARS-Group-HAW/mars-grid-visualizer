@@ -6,7 +6,7 @@ run:
 
 clean:
     #!/usr/bin/env fish
-    set dirs (fd --regex "(obj|bin)" -t d)
+    set dirs (fd --regex "(obj|bin)" --no-ignore -t d)
     if test (count $dirs) -gt 0
         echo -e "deleting:\n  $dirs"
         rm -r $dirs
