@@ -47,22 +47,32 @@ public partial class Program : Node2D
         }
     }
 
-    private static Line2D DrawCircle(Vector2 position, float radius, Color color)
+    private Line2D DrawCircle(Vector2I tilemapPosition, int radius, Color color)
     {
         var line = new Line2D
         {
-            Position = position,
+            Name = "Circle",
+            Position = tilemapPosition,
             Width = 3,
             Antialiased = true,
-            DefaultColor = Godot.Color.FromHtml(color.ColorToHtml())
+            DefaultColor = Godot.Color.FromHtml(color.ColorToHtml()),
+            ZIndex = 4,
         };
 
         for (int i = 0; i < 361; i++)
         {
             var angle = Mathf.DegToRad((float)(1.0 * i));
-            line.AddPoint(CalcPointOnCircle(angle, radius));
+            line.AddPoint(CalcPointOnCircle(angle, CalcRadiusFromTile(tilemapPosition, radius)));
         }
         return line;
+    }
+
+    private float CalcRadiusFromTile(Vector2I tilemapPosition, int radius)
+    {
+        var godotPosition = tileMapLayer!.MapToLocal(tilemapPosition);
+        var tilemapPositionWithOffset =
+            tileMapLayer.MapToLocal(new Vector2I(tilemapPosition.X + radius, tilemapPosition.Y));
+        return tilemapPositionWithOffset.X - godotPosition.X;
     }
 
     private static Vector2 CalcPointOnCircle(float angle, float radius)
@@ -139,34 +149,98 @@ public partial class Program : Node2D
 
     private void DrawGame(AgentJsonData parsed)
     {
-        GetTree().CallGroup("Agents", "queue_free");
         DrawAgents(parsed.Agents);
         DrawItems(parsed.Items);
         DrawBarrels(parsed.Barrels);
     }
 
-    private void DrawAgents(List<Agent> agents)
+
+    private readonly Dictionary<string, Agent> existingAgents = [];
+
+    private void DrawAgents(List<Agent> jsonAgents)
     {
-        foreach (var agent in agents)
+        if (existingAgents.Count == 0) InitializeAgents(jsonAgents);
+
+        UpdateAgents(jsonAgents);
+    }
+
+    private void InitializeAgents(List<Agent> jsonAgents)
+    {
+        var names = Names.SelectRandomNames(6);
+        for (int i = 0; i < jsonAgents.Count; i++)
         {
-            var agentInstance = (Node2D)agentScene.Instantiate();
-            agentInstance.Position = tileMapLayer!.MapToLocal(new(agent.X, map!.Size().Y - 1 - agent.Y));
-            if (agent.Alive)
-                agentInstance.GetNode<Sprite2D>("Sprite2D").Texture = agent.GetSprite();
+            var jsonAgent = jsonAgents[i];
+            var name = names[i];
+
+            var agentInstance = agentScene.Instantiate<Agent>();
+            agentInstance.Name = name;
+            agentInstance.GetNode<Label>("Label").Text = name;
+            agentInstance.Position = tileMapLayer!.MapToLocal(new(jsonAgent.X, map!.Size().Y - 1 - jsonAgent.Y));
+            if (jsonAgent.Alive)
+            {
+                agentInstance.GetNode<Sprite2D>("Sprite2D").Texture = jsonAgent.GetSprite();
+                agentInstance.GetNode<Label>("%Label").LabelSettings.FontColor = Godot.Color.FromHtml(jsonAgent.Color.ColorToHtml());
+            }
             else
             {
-                var headStoneSprite = agentInstance.GetNode<Sprite2D>("Sprite2D");
-                headStoneSprite.Texture = tileSetSpritesheet!.Texture;
-                headStoneSprite.RegionEnabled = true;
-                headStoneSprite.RegionRect = tileSetSpritesheet.GetTileTextureRegion(new(25, 19));
-                headStoneSprite.RotationDegrees += 270;
-                agent.Color = Color.Grey;
+                var agentSprite = agentInstance.GetNode<Sprite2D>("Sprite2D");
+                agentSprite.Texture = tileSetSpritesheet!.Texture;
+                agentSprite.RegionEnabled = true;
+                agentSprite.RegionRect = tileSetSpritesheet.GetTileTextureRegion(new(25, 19));
+                agentSprite.RotationDegrees += 270;
+                jsonAgent.Color = Color.Grey;
             }
-            agentInstance.AddChild(DrawCircle(agent.Position, agent.VisualRange * 16, agent.Color));
+            agentInstance.AddChild(DrawCircle(new Vector2I(jsonAgent.X, jsonAgent.Y), jsonAgent.VisualRange, jsonAgent.Color));
 
             agentInstance.ZIndex = 1;
             agentInstance.ZAsRelative = true;
             tileMapLayer.AddChild(agentInstance);
+
+            existingAgents[jsonAgent.Id] = agentInstance;
+        }
+    }
+
+    private void UpdateAgents(List<Agent> jsonAgents)
+    {
+        foreach (var jsonAgent in jsonAgents)
+        {
+            var agent = existingAgents[jsonAgent.Id];
+
+            if (agent.Alive && !jsonAgent.Alive)
+            {
+                if (jsonAgent.TaggerId == "00000000-0000-0000-0000-000000000000")
+                    GetNode<KillFeed>("%KillFeed").AddKill(agent.Name, agent.Color);
+                else
+                {
+                    var killer = existingAgents[jsonAgent.TaggerId];
+                    GetNode<KillFeed>("%KillFeed").AddKill(killer.Name, agent.Name, killer.Color, agent.Color);
+                }
+            }
+
+            agent.Position = tileMapLayer!.MapToLocal(new Vector2I(jsonAgent.X, map!.Size().Y - 1 - jsonAgent.Y));
+
+            if (jsonAgent.Alive)
+            {
+                var agentSprite = agent.GetNode<Sprite2D>("Sprite2D");
+                agentSprite.Texture = jsonAgent.GetSprite();
+                agentSprite.RegionEnabled = false;
+
+            }
+            else
+            {
+                var agentSprite = agent.GetNode<Sprite2D>("Sprite2D");
+                agentSprite.Texture = tileSetSpritesheet!.Texture;
+                agentSprite.RegionEnabled = true;
+                agentSprite.RegionRect = tileSetSpritesheet.GetTileTextureRegion(new(25, 19));
+                jsonAgent.Color = Color.Grey;
+
+            }
+
+            agent.Alive = jsonAgent.Alive;
+            agent.Color = jsonAgent.Color;
+            agent.GetNode<Label>("%Label").LabelSettings.FontColor = Godot.Color.FromHtml(jsonAgent.Color.ColorToHtml());
+            agent.GetNode<Line2D>("Circle").Free();
+            agent.AddChild(DrawCircle(new Vector2I(jsonAgent.X, jsonAgent.Y), jsonAgent.VisualRange, jsonAgent.Color));
         }
     }
 

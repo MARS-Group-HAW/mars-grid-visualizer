@@ -33,3 +33,34 @@ public static class DebugExtensions
     }
 }
 
+class Names
+{
+    private static readonly List<string> names = [
+            "Ada", "Alan", "Grace", "Dennis", "Linus", "Margaret",
+            "Tim", "John", "Barbara", "Donald", "Frances", "Kathleen",
+            "Jean", "Betty", "Marlyn", "Adele", "Hedy", "Radia",
+            "Vint", "Bob", "Larry", "Sergey", "Mark", "Bill",
+            "Steve", "Richard", "Brian", "Rob", "Ken",
+            "Doug", "Andy", "James", "Michael", "David", "Scott",
+            "Eric", "Guido", "Yukihiro", "Brendan", "Anders", "Bjarne",
+            "Niklaus", "Edsger", "Tony", "Leslie", "Shafi", "Silvio",
+            "Adi", "Ronald", "Whitfield", "Martin", "Peter", "Andrew",
+            "Frodo", "Gandalf", "Aragorn", "Legolas", "Gimli", "Boromir",
+            "Samwise", "Meriadoc", "Peregrin", "Arwen", "Elrond", "Galadriel",
+            "Faramir", "Eowyn", "Theoden", "Eomer", "Denethor", "Isildur",
+            "Elendil", "Celeborn", "Haldir", "Thranduil", "Bard", "Thorin",
+            "Balin", "Dwalin", "Fili", "Kili", "Bilbo", "Smaug"
+        ];
+
+    /// <summary>
+    /// Returns a list of unique, randomly selected names.
+    /// </summary>
+    public static List<string> SelectRandomNames(int count)
+    {
+        var random = new Random();
+        return names
+            .OrderBy(x => random.Next())
+            .Take(count)
+            .ToList();
+    }
+}

@@ -1,11 +1,18 @@
-[gd_scene load_steps=7 format=4 uid="uid://bica60a42l1wo"]
+[gd_scene load_steps=9 format=4 uid="uid://bica60a42l1wo"]
 
 [ext_resource type="Script" uid="uid://cyfolbo8v5lhu" path="res://Program.cs" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://baki32g4qrp7a" path="res://src/KillFeed.cs" id="3_1bvp3"]
 [ext_resource type="Theme" uid="uid://w2k27pt4cchl" path="res://src/main_theme.tres" id="3_h2yge"]
 [ext_resource type="Texture2D" uid="uid://dwvd2qhufcsif" path="res://assets/kenney_top-down-shooter/Tilesheet/tilesheet_complete.png" id="4_1bvp3"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1bvp3"]
 font_size = 120
+font_color = Color(0.867441, 0.291424, 0.153771, 1)
+outline_size = 39
+outline_color = Color(0.47876, 0.133588, 0.0491394, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_h2yge"]
+font_size = 94
 font_color = Color(0.867441, 0.291424, 0.153771, 1)
 outline_size = 39
 outline_color = Color(0.47876, 0.133588, 0.0491394, 1)
@@ -579,12 +586,19 @@ layout_mode = 2
 text = "Map Not Found"
 label_settings = SubResource("LabelSettings_1bvp3")
 
+[node name="WaitingForSimulation" type="Label" parent="CanvasLayer/CenterContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "waiting for simulation.."
+label_settings = SubResource("LabelSettings_h2yge")
+
 [node name="Control" type="Control" parent="CanvasLayer"]
 layout_mode = 3
 anchors_preset = 0
 offset_top = 6.0
-offset_right = 389.0
-offset_bottom = 274.0
+offset_right = 1151.0
+offset_bottom = 709.0
 
 [node name="ScorePanelContainer" type="PanelContainer" parent="CanvasLayer/Control"]
 layout_mode = 0
@@ -613,6 +627,19 @@ bbcode_enabled = true
 text = "Score"
 fit_content = true
 
+[node name="KillFeed" type="RichTextLabel" parent="CanvasLayer/Control"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -270.0
+offset_top = 28.0
+offset_right = -65.0
+offset_bottom = 193.0
+grow_horizontal = 0
+script = ExtResource("3_1bvp3")
+
 [node name="ConfigFilePopup" type="FileDialog" parent="CanvasLayer"]
 unique_name_in_owner = true
 title = "Select a config.json file"
@@ -622,6 +649,7 @@ theme = ExtResource("3_h2yge")
 ok_button_text = "Open"
 file_mode = 0
 access = 2
+show_hidden_files = false
 
 [node name="TopDownShooterBaseMap" type="TileMapLayer" parent="."]
 unique_name_in_owner = true
