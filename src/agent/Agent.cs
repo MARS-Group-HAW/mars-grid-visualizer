@@ -42,26 +42,21 @@ public partial class Agent : Node2D
         Creeping,
     }
 
-    [JsonPropertyName("id")]
-    public string Id { get; set; } = "00000000-0000-0000-0000-000000000000";
-    [JsonPropertyName("x")]
-    public int X { get; set; }
-    [JsonPropertyName("y")]
-    public int Y { get; set; }
-    [JsonPropertyName("alive")]
-    public bool Alive { get; set; } = true;
-    [JsonPropertyName("color")]
-    public Color Color { get; set; } = Color.Grey;
-    [JsonPropertyName("team")]
-    public string Team { get; set; } = "";
-    [JsonPropertyName("visualRange")]
-    public int VisualRange { get; set; } = 10;
-    [JsonPropertyName("gotShot")]
-    public bool GotShot { get; set; } = false;
-    [JsonPropertyName("stance")]
-    public Stance CurrentStance { get; set; } = Stance.Standing;
+    [JsonPropertyName("id")] public string Id { get; set; } = "00000000-0000-0000-0000-000000000000";
+    [JsonPropertyName("x")] public int X { get; set; }
+    [JsonPropertyName("y")] public int Y { get; set; }
+    [JsonPropertyName("alive")] public bool Alive { get; set; } = true;
+    [JsonPropertyName("color")] public Color Color { get; set; } = Color.Grey;
+    [JsonPropertyName("team")] private string Team { get; set; } = "";
+    [JsonPropertyName("visualRange")] public int VisualRange { get; set; } = 10;
+    [JsonPropertyName("gotShot")] private bool GotShot { get; set; } = false;
+    [JsonPropertyName("stance")] private Stance CurrentStance { get; set; } = Stance.Standing;
+    [JsonPropertyName("taggerID")] public string TaggerId { get; set; } = "00000000-0000-0000-0000-000000000000";
 
-    public Agent() { }
+    public Agent()
+    {
+    }
+
     public Agent(int x, int y)
     {
         X = x;
