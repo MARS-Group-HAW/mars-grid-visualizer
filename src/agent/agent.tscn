@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://cjie0j12xbmuk"]
+[gd_scene load_steps=4 format=3 uid="uid://cjie0j12xbmuk"]
 
 [ext_resource type="Script" uid="uid://dh8sd0omkglqh" path="res://src/agent/Agent.cs" id="1_byrto"]
 [ext_resource type="Texture2D" uid="uid://dmi37v8pxms0a" path="res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_stand.png" id="2_novgp"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_nilkv"]
+font_size = 45
+outline_color = Color(0, 0, 0, 1)
 
 [node name="Agent" type="Node2D" groups=["Agents"]]
 script = ExtResource("1_byrto")
@@ -9,3 +13,21 @@ script = ExtResource("1_byrto")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 rotation = 1.57079
 texture = ExtResource("2_novgp")
+
+[node name="Label" type="Label" parent="."]
+unique_name_in_owner = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = 23.0
+offset_right = 139.0
+offset_bottom = 79.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 1
+label_settings = SubResource("LabelSettings_nilkv")
+horizontal_alignment = 1
+vertical_alignment = 1
