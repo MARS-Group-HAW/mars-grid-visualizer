@@ -140,7 +140,6 @@ public partial class Program : Node2D
     private void DrawGame(AgentJsonData parsed)
     {
         GetTree().CallGroup("Agents", "queue_free");
-        GetTree().CallGroup("Barrels", "queue_free");
         DrawAgents(parsed.Agents);
         DrawItems(parsed.Items);
         DrawBarrels(parsed.Barrels);
@@ -212,28 +211,44 @@ public partial class Program : Node2D
         }
 
     }
+
+    private readonly Dictionary<string, Barrel> existingBarrels = [];
+
     private void DrawBarrels(List<Barrel> barrels)
     {
-        foreach (var barrel in barrels)
+        var bamBarrelSpriteIndex = new Vector2I(25, 17);
+        var explodedBarrelSpriteIndex = new Vector2I(26, 16);
+        foreach (var newBarrel in barrels)
         {
-            var barrelSprite = new Sprite2D
+
+            if (!existingBarrels.TryGetValue(newBarrel.Id, out var oldBarrel))
             {
-                Name = barrel.Id,
-                UniqueNameInOwner = true,
-                Position = tileMapLayer!.MapToLocal(new(barrel.X, map!.Size().Y - 1 - barrel.Y)),
-                Texture = tileSetSpritesheet!.Texture,
-                RegionEnabled = true,
-                RegionRect = barrel.HasExploded
-                    ? tileSetSpritesheet.GetTileTextureRegion(new(25, 17))
-                    : tileSetSpritesheet.GetTileTextureRegion(new(25, 16)),
-            };
-            tileMapLayer.AddChild(barrelSprite);
-            if (barrel.HasExploded)
-                GetTree().CreateTimer(2.0f).Timeout += () =>
-                    barrelSprite.RegionRect = tileSetSpritesheet.GetTileTextureRegion(new(26, 16));
+                oldBarrel = newBarrel;
+                // TODO: figure out a way to do this in the barrel class
+                oldBarrel.Position = tileMapLayer!.MapToLocal(new(newBarrel.X, map!.Size().Y - 1 - newBarrel.Y));
+                oldBarrel.RegionEnabled = true;
+                oldBarrel.RegionRect = tileSetSpritesheet!.GetTileTextureRegion(new(25, 16));
+                oldBarrel.Texture = tileSetSpritesheet!.Texture;
+                oldBarrel.ZAsRelative = true;
+                oldBarrel.ZIndex = 2;
+                existingBarrels[newBarrel.Id] = oldBarrel;
+                tileMapLayer!.AddChild(oldBarrel);
+            }
 
-            barrelSprite.AddToGroup("Barrels");
+            if (oldBarrel.HasExploded)
+            {
+                oldBarrel.RegionRect = tileSetSpritesheet!.GetTileTextureRegion(explodedBarrelSpriteIndex);
+                continue;
+            }
 
+            if (!newBarrel.HasExploded) continue;
+            oldBarrel.HasExploded = true;
+            // show bam sprite
+            oldBarrel.RegionRect = tileSetSpritesheet!.GetTileTextureRegion(bamBarrelSpriteIndex);
+            // after timeout show exploded sprite
+            GetTree().CreateTimer(10.0f).Timeout += () =>
+                GD.Print("Timer triggered");
+            oldBarrel.RegionRect = tileSetSpritesheet.GetTileTextureRegion(explodedBarrelSpriteIndex);
         }
     }
 }
