@@ -1,6 +1,6 @@
-[gd_scene load_steps=9 format=4 uid="uid://bica60a42l1wo"]
+[gd_scene load_steps=9 format=4 uid="uid://bmbgcgxdiwwu3"]
 
-[ext_resource type="Script" uid="uid://cyfolbo8v5lhu" path="res://Program.cs" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://cyfolbo8v5lhu" path="res://src/Program.cs" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://baki32g4qrp7a" path="res://src/KillFeed.cs" id="3_1bvp3"]
 [ext_resource type="Theme" uid="uid://w2k27pt4cchl" path="res://src/main_theme.tres" id="3_h2yge"]
 [ext_resource type="Texture2D" uid="uid://dwvd2qhufcsif" path="res://assets/kenney_top-down-shooter/Tilesheet/tilesheet_complete.png" id="4_1bvp3"]
@@ -633,23 +633,26 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -270.0
+offset_left = -309.0
 offset_top = 28.0
-offset_right = -65.0
-offset_bottom = 193.0
+offset_right = -49.0
+offset_bottom = 233.0
 grow_horizontal = 0
+bbcode_enabled = true
+text = "[outline_color=000][outline_size=4]Test[/outline_size]
+[/outline_color]"
+horizontal_alignment = 2
 script = ExtResource("3_1bvp3")
 
 [node name="ConfigFilePopup" type="FileDialog" parent="CanvasLayer"]
 unique_name_in_owner = true
-title = "Select a config.json file"
+title = "Open a File"
 initial_position = 2
-size = Vector2i(833, 360)
+size = Vector2i(885, 360)
 theme = ExtResource("3_h2yge")
 ok_button_text = "Open"
 file_mode = 0
 access = 2
-show_hidden_files = false
 
 [node name="TopDownShooterBaseMap" type="TileMapLayer" parent="."]
 unique_name_in_owner = true
