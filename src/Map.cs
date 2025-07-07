@@ -1,6 +1,4 @@
 using System.Diagnostics;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Godot;
 
 namespace mmvp.src;
@@ -103,23 +101,14 @@ public class Map(List<List<Map.Field>> data)
 
     private TileSetCoordinates currentTileSetCoords = GetMinipackTiles();
 
-    public static string? GetConfigPath()
+    public static Map ReadInMap(string mapPath)
     {
-        var rootDir = FindRootDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()));
-        if (rootDir is null) return null;
-        var pathToConfigFile = Path.Combine(rootDir.FullName, "LaserTagBox", "config.json");
-
-        if (!File.Exists(pathToConfigFile)) return null;
-
-        return pathToConfigFile;
+        var lines = File.ReadAllLines(mapPath);
+        return ReadInMapFromLines(lines);
     }
 
-    public static Map ReadInMap(string configPath)
+    public static Map ReadInMapFromLines(string[] lines)
     {
-        var mapPath = GetMapPath(configPath);
-
-        // FIXME: handle null
-        var lines = File.ReadAllLines(mapPath!);
         var mapData = lines.Select(line => line.Split(';')
                 .Select(field => field switch
                 {
@@ -138,27 +127,6 @@ public class Map(List<List<Map.Field>> data)
 
         return new Map(mapData);
     }
-
-    private static string? GetMapPath(string configPath)
-    {
-        var rootDir = Directory.GetParent(configPath)!.Parent!;
-        var configJson = File.ReadAllText(configPath);
-        var config = JsonSerializer.Deserialize<LaserTagConfig>(configJson);
-        var playerBodyLayer = config?.Layers.Find(l => l.Name == "PlayerBodyLayer") ??
-                              throw new Exception("PlayerBodyLayer not found in config.");
-        return Path.Combine(rootDir.FullName, "LaserTagBox", playerBodyLayer.File);
-    }
-
-    private static DirectoryInfo? FindRootDirectory(DirectoryInfo currentDir)
-    {
-        if (Directory.Exists(Path.Combine(currentDir.FullName, "LaserTagBox")))
-        {
-            return currentDir;
-        }
-
-        return currentDir.Parent is not null ? FindRootDirectory(currentDir.Parent) : null;
-    }
-
 
     public override string ToString()
     {
@@ -258,19 +226,4 @@ public class Map(List<List<Map.Field>> data)
 
         return data[y][x] is Field.Wall;
     }
-}
-
-public class LaserTagConfig
-{
-    [JsonPropertyName("layers")]
-    public List<LayerConfig> Layers { get; set; } = [];
-}
-
-public class LayerConfig
-{
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = "";
-
-    [JsonPropertyName("file")]
-    public string File { get; set; } = "";
 }
