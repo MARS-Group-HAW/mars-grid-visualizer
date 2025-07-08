@@ -19,6 +19,7 @@ public partial class Program : Node2D
     private bool webSocketConnection;
     private TileSetAtlasSource? tileSetSpritesheet;
     private Map? map;
+    private LaserTagConfig? config;
 
     public override async void _Ready()
     {
@@ -29,7 +30,6 @@ public partial class Program : Node2D
         map.PopulateTileMap(tileMapLayer);
 
         ConnectWebSocket();
-
     }
 
     public override void _Process(double delta)
@@ -82,18 +82,21 @@ public partial class Program : Node2D
 
     private async Task<Map> LoadMap()
     {
-        var configPath = Map.GetConfigPath();
-        if (configPath is null)
+        var configPath = LaserTagConfig.GetConfigPath();
+        var mapPath = configPath is not null ? LaserTagConfig.GetMapPath(configPath) : null;
+        if (mapPath is null)
         {
             GetNode<Label>("%MapNotFoundLabel").Show();
             var fileDialog = GetNode<FileDialog>("%ConfigFilePopup");
             fileDialog.Show();
             var result = await ToSignal(fileDialog, FileDialog.SignalName.FileSelected);
             configPath = result[0].AsString();
+            mapPath = LaserTagConfig.GetMapPath(configPath)!;
         }
+        config = LaserTagConfig.New(configPath!);
 
         GetNode<Label>("%MapNotFoundLabel").Hide();
-        return Map.ReadInMap(configPath);
+        return Map.ReadInMap(mapPath);
     }
 
     private void ConnectWebSocket()

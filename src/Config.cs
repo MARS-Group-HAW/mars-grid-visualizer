@@ -8,6 +8,11 @@ public class LaserTagConfig
     [JsonPropertyName("globals")] public required Globals Globals { get; set; }
     [JsonPropertyName("layers")] public List<LayerConfig> Layers { get; set; } = [];
 
+    public static LaserTagConfig? New(string configPath)
+    {
+        return JsonSerializer.Deserialize<LaserTagConfig>(File.ReadAllText(configPath));
+    }
+
     private static DirectoryInfo? FindRootDirectory(DirectoryInfo currentDir)
     {
         if (Directory.Exists(Path.Combine(currentDir.FullName, "LaserTagBox")))
@@ -43,10 +48,13 @@ public class LaserTagConfig
     }
 }
 
-public record Globals([property: JsonPropertyName("steps")] int Steps);
+/// <summary>
+/// GLobal Options of the Simulations.
+/// </summary>
+/// <param name="Steps"> How long the simulation goes. </param>
+public record Globals(
+        [property: JsonPropertyName("steps")] int Steps);
 
-public class LayerConfig
-{
-    [JsonPropertyName("name")] public string Name { get; set; } = "";
-    [JsonPropertyName("file")] public string File { get; set; } = "";
-}
+public record LayerConfig(
+        [property: JsonPropertyName("name")] string Name,
+        [property: JsonPropertyName("file")] string File);
