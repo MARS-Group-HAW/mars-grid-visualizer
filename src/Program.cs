@@ -7,7 +7,7 @@ using Color = mmvp.src.agent.Color;
 
 namespace mmvp;
 
-public partial class Program : Node2D
+public partial class Program : Control
 {
     private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
