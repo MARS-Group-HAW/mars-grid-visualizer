@@ -20,6 +20,9 @@ public partial class BaseMapLayer : TileMapLayer
             GD.Print("minScale: ", minScale);
 
             Scale = new Vector2(minScale, minScale);
+
+            var tileMapSizeNormalized = new Vector2(tileMapSize.X * minScale, tileMapSize.Y * minScale);
+            Position = (mainSubViewportContainer.Size - tileMapSizeNormalized) / 2;
         };
     }
 }
