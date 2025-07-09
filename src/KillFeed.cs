@@ -7,7 +7,10 @@ namespace mmvp;
 public partial class KillFeed : RichTextLabel
 {
         private RichTextLabel? killFeedLabel;
-        private List<string> killEntries = [];
+        private readonly List<string> killEntries = [];
+
+        private const int OUTLINE_SIZE = 12;
+        private const float DARKENED_AMOUNT = 0.8f;
 
         public override void _Ready()
         {
@@ -18,7 +21,7 @@ public partial class KillFeed : RichTextLabel
         public void AddKill(string killerName, string victimName, Color killerColor, Color victimColor)
         {
                 var killText =
-                        $"[color={killerColor.ColorToHtml()}]{killerName}[/color] eliminated [color={victimColor.ColorToHtml()}]{victimName}[/color]";
+                        $"[outline_color={Godot.Color.FromHtml(killerColor.ColorToHtml()).Darkened(DARKENED_AMOUNT).ToHtml(false)}][color={killerColor.ColorToHtml()}]{killerName}[/color][/outline_color] eliminated [outline_color={Godot.Color.FromHtml(victimColor.ColorToHtml()).Darkened(DARKENED_AMOUNT).ToHtml(false)}][color={victimColor.ColorToHtml()}]{victimName}[/color][/outline_color]";
 
                 InternalAddKill(killText);
 
@@ -31,16 +34,14 @@ public partial class KillFeed : RichTextLabel
 
         private void InternalAddKill(string killText)
         {
-                killEntries.Add(killText);
-
-                if (killEntries.Count > 5)
-                        killEntries.RemoveAt(0);
+                killEntries.Add($"[outline_size={OUTLINE_SIZE}]{killText}[/outline_size]");
 
                 UpdateDisplay();
         }
 
         internal void AddKill(StringName name, Color color)
         {
-                InternalAddKill($"[color={color.ColorToHtml()}]{name}[/color] died");
+                // TODO: outline colour isn't working, since darkened takes a float and not an int
+                InternalAddKill($"[outline_color={Godot.Color.FromHtml(color.ColorToHtml()).Darkened(DARKENED_AMOUNT).ToHtml(false)}][color={color.ColorToHtml()}]{name}[/color][/outline_color] died");
         }
 }
