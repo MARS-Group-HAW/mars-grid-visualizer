@@ -28,6 +28,11 @@ public static class ColorMethods
             _ => throw new UnreachableException(),
         };
     }
+
+    public static Godot.Color ToGodotColor(this Color color)
+    {
+        return Godot.Color.FromHtml(color.ColorToHtml());
+    }
 }
 
 public partial class Agent : Node2D
