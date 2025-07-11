@@ -77,9 +77,10 @@ public partial class Program : Control
 
     public override void _Input(InputEvent @event)
     {
-        if (IsInstanceValid(@event) &&
-                @event is InputEventKey key &&
-                key.Keycode == Key.Escape)
+        if (!IsInstanceValid(@event)) return;
+        if (@event is not InputEventKey key) return;
+
+        if (key.IsActionPressed("quit"))
         {
             GetTree().CallDeferred("quit");
         }
