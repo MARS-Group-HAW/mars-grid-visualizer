@@ -6,42 +6,52 @@ namespace mmvp;
 
 public partial class KillFeed : RichTextLabel
 {
-        private RichTextLabel? killFeedLabel;
-        private readonly List<string> killEntries = [];
+    private RichTextLabel? killFeedLabel;
+    private readonly List<string> killEntries = [];
+    private const int OutlineSize = 12;
+    private const float DarkenedAmount = 0.8f;
 
-        private const int OUTLINE_SIZE = 12;
-        private const float DARKENED_AMOUNT = 0.8f;
+    public override void _Ready()
+    {
+        killFeedLabel = GetNode<RichTextLabel>("%KillFeed");
+        killFeedLabel.BbcodeEnabled = true;
+    }
 
-        public override void _Ready()
-        {
-                killFeedLabel = GetNode<RichTextLabel>("%KillFeed");
-                killFeedLabel.BbcodeEnabled = true;
-        }
+    public override void _Input(InputEvent @event)
+    {
 
-        public void AddKill(string killerName, string victimName, Color killerColor, Color victimColor)
-        {
-                var killText =
-                        $"[outline_color={Godot.Color.FromHtml(killerColor.ColorToHtml()).Darkened(DARKENED_AMOUNT).ToHtml(false)}][color={killerColor.ColorToHtml()}]{killerName}[/color][/outline_color] eliminated [outline_color={Godot.Color.FromHtml(victimColor.ColorToHtml()).Darkened(DARKENED_AMOUNT).ToHtml(false)}][color={victimColor.ColorToHtml()}]{victimName}[/color][/outline_color]";
+    }
 
-                InternalAddKill(killText);
+    public void AddKill(Agent killer, Agent victim)
+    {
+        var killText = $"{AddOutlineAndColor(killer)} eliminated {AddOutlineAndColor(victim)}";
+        InternalAddKill(killText);
+    }
 
-        }
+    internal void AddKill(Agent agent)
+    {
+        InternalAddKill($"{AddOutlineAndColor(agent.Name, agent.TeamColor)} died");
+    }
 
-        private void UpdateDisplay()
-        {
-                killFeedLabel!.Text = string.Join("\n", killEntries);
-        }
+    internal void AddKill(string text, Color color)
+    {
+        InternalAddKill($"{AddOutlineAndColor(text, color)} died");
+    }
 
-        private void InternalAddKill(string killText)
-        {
-                killEntries.Add($"[outline_size={OUTLINE_SIZE}]{killText}[/outline_size]");
+    private void InternalAddKill(string killText)
+    {
+        killEntries.Add($"{killText}");
+        killFeedLabel!.Text = string.Join("\n", killEntries);
+    }
 
-                UpdateDisplay();
-        }
+    private static string AddOutlineAndColor(Agent agent)
+    {
+        return AddOutlineAndColor(agent.Name, agent.TeamColor);
+    }
 
-        internal void AddKill(StringName name, Color color)
-        {
-                // TODO: outline colour isn't working, since darkened takes a float and not an int
-                InternalAddKill($"[outline_color={Godot.Color.FromHtml(color.ColorToHtml()).Darkened(DARKENED_AMOUNT).ToHtml(false)}][color={color.ColorToHtml()}]{name}[/color][/outline_color] died");
-        }
+    private static string AddOutlineAndColor(string text, Color color)
+    {
+        var htmlColor = color.ToGodotColor().Darkened(DarkenedAmount).ToHtml(false);
+        return $"[outline_size={OutlineSize}][outline_color={htmlColor}][color={color.ColorToHtml()}]{text}[/color][/outline_color][/outline_size]";
+    }
 }

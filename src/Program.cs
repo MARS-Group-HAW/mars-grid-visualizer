@@ -253,11 +253,11 @@ public partial class Program : Control
             if (agent.Alive && !jsonAgent.Alive)
             {
                 if (jsonAgent.TaggerId == "00000000-0000-0000-0000-000000000000")
-                    GetNode<KillFeed>("%KillFeed").AddKill(agent.Name, agent.Color);
+                    GetNode<KillFeed>("%KillFeed").AddKill(agent);
                 else
                 {
                     var killer = existingAgents[jsonAgent.TaggerId];
-                    GetNode<KillFeed>("%KillFeed").AddKill(killer.Name, agent.Name, killer.Color, agent.Color);
+                    GetNode<KillFeed>("%KillFeed").AddKill(killer, agent);
                 }
             }
 
