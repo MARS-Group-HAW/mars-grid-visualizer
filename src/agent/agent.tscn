@@ -2,10 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dh8sd0omkglqh" path="res://src/agent/Agent.cs" id="1_byrto"]
 [ext_resource type="Texture2D" uid="uid://dmi37v8pxms0a" path="res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_stand.png" id="2_novgp"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_nilkv"]
-font_size = 45
-outline_color = Color(0, 0, 0, 1)
+[ext_resource type="Theme" uid="uid://w2k27pt4cchl" path="res://src/main_theme.tres" id="3_novgp"]
 
 [node name="Agent" type="Node2D" groups=["Agents"]]
 script = ExtResource("1_byrto")
@@ -14,7 +11,7 @@ script = ExtResource("1_byrto")
 rotation = 1.57079
 texture = ExtResource("2_novgp")
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="RichTextLabel" parent="."]
 unique_name_in_owner = true
 anchors_preset = 8
 anchor_left = 0.5
@@ -24,10 +21,12 @@ anchor_bottom = 0.5
 offset_left = -140.0
 offset_top = 23.0
 offset_right = 139.0
-offset_bottom = 79.0
+offset_bottom = 85.8125
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_vertical = 1
-label_settings = SubResource("LabelSettings_nilkv")
+theme = ExtResource("3_novgp")
+theme_override_font_sizes/normal_font_size = 40
+bbcode_enabled = true
+text = "[color=#ffffff]Player[/color]"
 horizontal_alignment = 1
 vertical_alignment = 1

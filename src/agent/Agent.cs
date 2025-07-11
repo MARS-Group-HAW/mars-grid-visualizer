@@ -49,6 +49,7 @@ public partial class Agent : Node2D
     [JsonPropertyName("gotShot")] private bool GotShot { get; set; } = false;
     [JsonPropertyName("stance")] private Stance CurrentStance { get; set; } = Stance.Standing;
     [JsonPropertyName("taggerID")] public string TaggerId { get; set; } = "00000000-0000-0000-0000-000000000000";
+    public Color TeamColor { get; internal set; }
 
     public Agent()
     {
@@ -74,7 +75,7 @@ public partial class Agent : Node2D
     }
 }
 
-public class AgentJsonData
+public record AgentJsonData
 {
     [JsonPropertyName("expectingTick")]
     public int ExpectingTick { get; set; } = -1;
