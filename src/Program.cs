@@ -7,6 +7,13 @@ using Color = mmvp.src.agent.Color;
 
 namespace mmvp;
 
+public abstract record GameState
+{
+    public sealed record Loading : GameState;
+    public sealed record Playing : GameState;
+    public sealed record Finished : GameState;
+}
+
 public partial class Program : Control
 {
     private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -20,6 +27,8 @@ public partial class Program : Control
     private TileSetAtlasSource? tileSetSpritesheet;
     private Map? map;
     private LaserTagConfig? config;
+    private readonly List<AgentJsonData> jsonDataHistory = [];
+    private GameState gamestate = new GameState.Loading();
 
     public override async void _Ready()
     {
@@ -35,6 +44,35 @@ public partial class Program : Control
     public override void _Process(double delta)
     {
         if (webSocketConnection) WebSocketLoop();
+        if (gamestate is GameState.Finished) ShowScores();
+    }
+
+    private void ShowScores()
+    {
+        static string title(string s)
+        {
+            return $"[font_size=100][center]{s}[/center][/font_size]";
+        }
+
+        var endScoreLabel = GetNode<RichTextLabel>("%EndScoreLabel");
+
+        var scores = jsonDataHistory.Last().Scores;
+
+        var isDraw = scores[0].TeamScore == scores[1].TeamScore;
+        if (isDraw)
+        {
+            endScoreLabel.Text = title("Game resulted in a draw!");
+            endScoreLabel.Show();
+            return;
+        }
+
+        var winner = scores.OrderByDescending(x => x.TeamScore).First();
+        var c = winner.TeamColor.ColorToHtml();
+
+        endScoreLabel.Text = $"[color={c}]{title($"{winner.TeamName} Won!")}[/color]";
+        endScoreLabel.Show();
+
+        GD.Print(jsonDataHistory.Last());
     }
 
     public override void _Input(InputEvent @event)
@@ -43,7 +81,7 @@ public partial class Program : Control
                 @event is InputEventKey key &&
                 key.Keycode == Key.Escape)
         {
-            GetTree().Quit();
+            GetTree().CallDeferred("quit");
         }
     }
 
@@ -116,20 +154,21 @@ public partial class Program : Control
 
         if (socket.GetReadyState() is WebSocketPeer.State.Open)
         {
+            if (gamestate is not GameState.Playing) gamestate = new GameState.Playing();
             while (socket.GetAvailablePacketCount() > 0)
             {
                 var message = socket.GetPacket().GetStringFromUtf8();
-                if (string.IsNullOrWhiteSpace(message))
-                {
-                    continue;
-                }
+                if (string.IsNullOrWhiteSpace(message)) continue;
+
                 var parsed = JsonSerializer.Deserialize<AgentJsonData>(message, jsonOptions);
                 if (parsed == null) { GD.Print("could not serialize json to AgentJsonData"); continue; }
+                jsonDataHistory.Add(parsed);
 
                 if (currentTick != parsed.ExpectingTick) currentTick = parsed.ExpectingTick;
                 UpdateScores(parsed.Scores);
                 DrawGame(parsed);
                 if (currentTick % 100 == 0) GD.Print("currentTick: ", currentTick);
+                if (currentTick == config?.Globals.Steps) { gamestate = new GameState.Finished(); ShowScores(); }
                 socket.SendText(currentTick.ToString());
                 currentTick += 1;
             }

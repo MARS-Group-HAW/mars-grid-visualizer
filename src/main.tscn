@@ -1,6 +1,5 @@
-[gd_scene load_steps=13 format=4 uid="uid://bmbgcgxdiwwu3"]
+[gd_scene load_steps=12 format=4 uid="uid://bmbgcgxdiwwu3"]
 
-[ext_resource type="Theme" uid="uid://c4e6cs2v33gue" path="res://src/sidepanel_stylebox.tres" id="1_3cfgd"]
 [ext_resource type="Script" uid="uid://cyfolbo8v5lhu" path="res://src/Program.cs" id="1_ig7tw"]
 [ext_resource type="Script" uid="uid://baki32g4qrp7a" path="res://src/KillFeed.cs" id="3_1bvp3"]
 [ext_resource type="Texture2D" uid="uid://dwvd2qhufcsif" path="res://assets/kenney_top-down-shooter/Tilesheet/tilesheet_complete.png" id="4_1bvp3"]
@@ -593,7 +592,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_3cfgd")
 script = ExtResource("1_ig7tw")
 
 [node name="ErrorLabelsContainer" type="CenterContainer" parent="."]
@@ -606,7 +604,6 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme = ExtResource("1_3cfgd")
 
 [node name="MapNotFoundLabel" type="Label" parent="ErrorLabelsContainer"]
 unique_name_in_owner = true
@@ -637,22 +634,18 @@ layout_mode = 2
 [node name="ScorePanelContainer" type="PanelContainer" parent="HSplitContainer/LeftPanel"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-theme = ExtResource("1_3cfgd")
 theme_override_styles/panel = SubResource("StyleBoxFlat_fyndt")
 
 [node name="ScoreVBoxContainer" type="VBoxContainer" parent="HSplitContainer/LeftPanel/ScorePanelContainer"]
 layout_mode = 2
-theme = ExtResource("1_3cfgd")
 
 [node name="ScoreLabel" type="Label" parent="HSplitContainer/LeftPanel/ScorePanelContainer/ScoreVBoxContainer"]
 layout_mode = 2
-theme = ExtResource("1_3cfgd")
 text = "Score:"
 
 [node name="Score" type="RichTextLabel" parent="HSplitContainer/LeftPanel/ScorePanelContainer/ScoreVBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-theme = ExtResource("1_3cfgd")
 bbcode_enabled = true
 text = "Score"
 fit_content = true
@@ -691,7 +684,6 @@ script = ExtResource("4_kmhfv")
 [node name="RightPanel" type="VSplitContainer" parent="HSplitContainer/HSplitContainer"]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
-theme = ExtResource("1_3cfgd")
 
 [node name="RightPanelContainer" type="PanelContainer" parent="HSplitContainer/HSplitContainer/RightPanel"]
 layout_mode = 2
@@ -702,19 +694,33 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_kmhfv")
 unique_name_in_owner = true
 layout_mode = 2
 bbcode_enabled = true
-text = "[outline_color=a32a2a][outline_size=4]Test[/outline_size]
+text = "[outline_color=a32a2a][outline_size=4][/outline_size]
 [/outline_color]"
 scroll_active = false
 scroll_following = true
 horizontal_alignment = 2
 script = ExtResource("3_1bvp3")
 
+[node name="EndScoreLabel" type="RichTextLabel" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -141.0
+offset_bottom = 141.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "[font_size=100][center]Team Won![/center][/font_size]"
+
 [node name="ConfigFilePopup" type="FileDialog" parent="."]
 unique_name_in_owner = true
 title = "Open a File"
 initial_position = 2
 size = Vector2i(885, 360)
-theme = ExtResource("1_3cfgd")
 ok_button_text = "Open"
 file_mode = 0
 access = 2
