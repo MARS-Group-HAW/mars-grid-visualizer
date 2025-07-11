@@ -23,7 +23,6 @@ public partial class Program : Control
     private WebSocketPeer socket = new();
     private int currentTick = 1;
     private TileMapLayer? tileMapLayer;
-    private bool webSocketConnection;
     private TileSetAtlasSource? tileSetSpritesheet;
     private Map? map;
     private LaserTagConfig? config;
@@ -43,7 +42,7 @@ public partial class Program : Control
 
     public override void _Process(double delta)
     {
-        if (webSocketConnection) WebSocketLoop();
+        WebSocketLoop();
         if (gamestate is GameState.Finished) ShowScores();
     }
 
@@ -153,7 +152,8 @@ public partial class Program : Control
     {
         socket.Poll();
 
-        if (socket.GetReadyState() is WebSocketPeer.State.Open)
+        if (socket.GetReadyState() is WebSocketPeer.State.Connecting) GD.Print("Connecting to Simulation..");
+        else if (socket.GetReadyState() is WebSocketPeer.State.Open)
         {
             if (gamestate is not GameState.Playing) gamestate = new GameState.Playing();
             while (socket.GetAvailablePacketCount() > 0)
@@ -175,7 +175,7 @@ public partial class Program : Control
             }
         }
 
-        if (socket.GetReadyState() is WebSocketPeer.State.Closed)
+        else if (socket.GetReadyState() is WebSocketPeer.State.Closed)
         {
             GD.Print($"WebSocket closed with code: {socket.GetCloseCode()} and reason: {socket.GetCloseReason()}");
             SetProcess(false);
