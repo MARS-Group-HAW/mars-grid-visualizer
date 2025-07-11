@@ -669,7 +669,10 @@ mouse_target = true
 
 [node name="MainSubViewport" type="SubViewport" parent="HSplitContainer/HSplitContainer/PanelContainer/MainPanel/MainSubViewportContainer"]
 handle_input_locally = false
-size = Vector2i(678, 648)
+msaa_2d = 3
+use_taa = true
+canvas_item_default_texture_filter = 3
+size = Vector2i(1446, 1080)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
