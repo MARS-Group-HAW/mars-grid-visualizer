@@ -12,4 +12,8 @@
   <ItemGroup>
     <Compile Remove="Tests/**" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Chickensoft.GameTools" Version="2.0.28" />
+  </ItemGroup>
 </Project>

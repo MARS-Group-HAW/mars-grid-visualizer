@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text.Json;
+using Chickensoft.GameTools.Displays;
 using Godot;
 using mmvp.src;
 using mmvp.src.agent;
@@ -31,6 +32,11 @@ public partial class Program : Control
 
     public override async void _Ready()
     {
+        GetWindow().LookGood(
+                WindowScaleBehavior.UIFixed,
+                Display.QHD,
+                maxWindowedSize: 1.0f);
+
         map = await LoadMap();
 
         tileMapLayer = GetNode<TileMapLayer>("%TopDownShooterBaseMap");
