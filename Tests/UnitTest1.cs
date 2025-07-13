@@ -1,4 +1,4 @@
-using mmvp;
+using mmvp.src;
 
 namespace Tests;
 
