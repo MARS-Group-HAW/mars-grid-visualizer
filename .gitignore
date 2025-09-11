@@ -1,7 +1,10 @@
+test_buffer.json
+
 # Godot 4+ specific ignores
 .godot/
 /android/
 /export/
+/godot_export/
 
 # C# compilation artifacts
 **/bin/
