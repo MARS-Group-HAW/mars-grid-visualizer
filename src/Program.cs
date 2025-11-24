@@ -4,7 +4,7 @@ using Chickensoft.GameTools.Displays;
 using Godot;
 using mmvp.src;
 using mmvp.src.agent;
-using Color = mmvp.src.agent.Color;
+using Color = mmvp.src.Color;
 
 namespace mmvp;
 

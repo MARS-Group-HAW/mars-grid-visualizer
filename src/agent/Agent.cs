@@ -1,18 +1,8 @@
-using Godot;
-using System.Text.Json.Serialization;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
+using Godot;
 
 namespace mmvp.src.agent;
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum Color
-{
-    Red,
-    Green,
-    Blue,
-    Yellow,
-    Grey,
-}
 
 public static class ColorMethods
 {
@@ -56,9 +46,7 @@ public partial class Agent : Node2D
     [JsonPropertyName("taggerID")] public string TaggerId { get; set; } = "00000000-0000-0000-0000-000000000000";
     public Color TeamColor { get; internal set; }
 
-    public Agent()
-    {
-    }
+    public Agent() { }
 
     public Agent(int x, int y)
     {
@@ -77,53 +65,5 @@ public partial class Agent : Node2D
             Color.Grey => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
             _ => throw new UnreachableException(),
         };
-    }
-}
-
-public record AgentJsonData
-{
-    [JsonPropertyName("expectingTick")]
-    public int ExpectingTick { get; set; } = -1;
-
-    [JsonPropertyName("agents")]
-    public List<Agent> Agents { get; set; } = [];
-
-    [JsonPropertyName("items")]
-    public List<Item> Items { get; set; } = [];
-
-    [JsonPropertyName("explosiveBarrels")]
-    public List<Barrel> Barrels { get; set; } = [];
-
-    [JsonPropertyName("scores")]
-    public List<Score> Scores { get; set; } = [];
-}
-
-public record Item(
-    [property: JsonPropertyName("id")] string Id,
-    [property: JsonPropertyName("x")] int X,
-    [property: JsonPropertyName("y")] int Y,
-    [property: JsonPropertyName("color")] Color Color,
-    [property: JsonPropertyName("type")] ItemType Type,
-    [property: JsonPropertyName("pickedUp")] bool PickedUp,
-    [property: JsonPropertyName("ownerID")] string OwnerId);
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
-public enum ItemType
-{
-    Flag
-}
-
-public class Score
-{
-    [JsonPropertyName("teamName")]
-    public string TeamName { get; set; } = "";
-    [JsonPropertyName("teamColor")]
-    public Color TeamColor { get; set; } = Color.Grey;
-    [JsonPropertyName("score")]
-    public int TeamScore { get; set; } = 0;
-
-    public override string ToString()
-    {
-        return $"Score {{ {TeamName}, {TeamScore} }}";
     }
 }
