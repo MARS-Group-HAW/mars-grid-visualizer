@@ -26,22 +26,18 @@ public partial class Program : Control
     private TileMapLayer? tileMapLayer;
     private TileSetAtlasSource? tileSetSpritesheet;
     private Map? map;
-    private LaserTagConfig? config;
     private readonly List<AgentJsonData> jsonDataHistory = [];
-    private GameState gamestate = new GameState.Loading();
+    private GameState gameState = new GameState.Loading();
 
-    public override async void _Ready()
+    public override void _Ready()
     {
         GetWindow().LookGood(
                 WindowScaleBehavior.UIFixed,
                 Display.QHD,
                 maxWindowedSize: 1.0f);
 
-        map = await LoadMap();
-
         tileMapLayer = GetNode<TileMapLayer>("%TopDownShooterBaseMap");
         tileSetSpritesheet = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
-        map.PopulateTileMap(tileMapLayer);
 
         ConnectWebSocket();
     }
@@ -49,7 +45,7 @@ public partial class Program : Control
     public override void _Process(double delta)
     {
         WebSocketLoop();
-        if (gamestate is GameState.Finished) ShowScores();
+        if (gameState is GameState.Finished) ShowScores();
     }
 
     private void ShowScores()
@@ -124,25 +120,6 @@ public partial class Program : Control
         return new Vector2(Mathf.Sin(angle) * radius, Mathf.Cos(angle) * radius);
     }
 
-    private async Task<Map> LoadMap()
-    {
-        var configPath = LaserTagConfig.GetConfigPath();
-        var mapPath = configPath is not null ? LaserTagConfig.GetMapPath(configPath) : null;
-        if (mapPath is null)
-        {
-            GetNode<Label>("%MapNotFoundLabel").Show();
-            var fileDialog = GetNode<FileDialog>("%ConfigFilePopup");
-            fileDialog.Show();
-            var result = await ToSignal(fileDialog, FileDialog.SignalName.FileSelected);
-            configPath = result[0].AsString();
-            mapPath = LaserTagConfig.GetMapPath(configPath)!;
-        }
-        config = LaserTagConfig.New(configPath!);
-
-        GetNode<Label>("%MapNotFoundLabel").Hide();
-        return Map.ReadInMap(mapPath);
-    }
-
     private void ConnectWebSocket()
     {
         if (socket.ConnectToUrl("ws://127.0.0.1:8181") != Error.Ok)
@@ -159,7 +136,7 @@ public partial class Program : Control
         if (socket.GetReadyState() is WebSocketPeer.State.Connecting) GD.Print("Connecting to Simulation..");
         else if (socket.GetReadyState() is WebSocketPeer.State.Open)
         {
-            if (gamestate is not GameState.Playing) gamestate = new GameState.Playing();
+            if (gameState is not GameState.Playing) gameState = new GameState.Playing();
             while (socket.GetAvailablePacketCount() > 0)
             {
                 var message = socket.GetPacket().GetStringFromUtf8();
@@ -169,11 +146,15 @@ public partial class Program : Control
                 if (parsed == null) { GD.Print("could not serialize json to AgentJsonData"); continue; }
                 jsonDataHistory.Add(parsed);
 
-                if (currentTick != parsed.ExpectingTick) currentTick = parsed.ExpectingTick;
+                if (parsed.MapPath is null) throw new Exception("the server did not provide a map path");
+                map = Map.ReadInMap(parsed.MapPath);
+                map.PopulateTileMap(tileMapLayer!);
+
+                UpdateCurrentTick(parsed.ExpectingTick);
                 UpdateScores(parsed.Scores);
                 DrawGame(parsed);
-                if (currentTick % 100 == 0) GD.Print("currentTick: ", currentTick);
-                if (currentTick == config?.Globals.Steps) { gamestate = new GameState.Finished(); ShowScores(); }
+                // FIXME: since we don't have access to the config anymore, there needs to be another way to
+                //        tell, wether the game has ended
                 socket.SendText(currentTick.ToString());
                 currentTick += 1;
             }
@@ -184,6 +165,12 @@ public partial class Program : Control
             GD.Print($"WebSocket closed with code: {socket.GetCloseCode()} and reason: {socket.GetCloseReason()}");
             SetProcess(false);
         }
+    }
+
+    private void UpdateCurrentTick(int tick)
+    {
+        currentTick = tick;
+        GetNode<RichTextLabel>("%Tick").Text = tick.ToString() + "\n\n";
     }
 
     private void UpdateScores(List<Score> scores)
