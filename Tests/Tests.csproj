@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\mmvp.csproj" />
+    <ProjectReference Include="..\MarsGridVisualizer.csproj" />
   </ItemGroup>
 
 </Project>

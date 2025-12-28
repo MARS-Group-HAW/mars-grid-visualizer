@@ -24,7 +24,7 @@ display_server/driver.linuxbsd="wayland"
 
 [dotnet]
 
-project/assembly_name="mmvp"
+project/assembly_name="MarsGridVisualizer"
 
 [file_customization]
 

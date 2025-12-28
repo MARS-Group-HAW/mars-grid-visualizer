@@ -1,7 +1,7 @@
 using Godot;
 using System.Text.Json.Serialization;
 
-namespace mmvp.src.agent;
+namespace MarsGridVisualizer.Agents;
 
 public partial class Barrel(
     string id,

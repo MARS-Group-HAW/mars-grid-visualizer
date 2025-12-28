@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Godot;
 
-namespace mmvp.src;
+namespace MarsGridVisualizer;
 
 
 public class Map(List<List<Map.Field>> data)

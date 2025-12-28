@@ -4,7 +4,7 @@
     <BuildType Name="ExportDebug" />
     <BuildType Name="ExportRelease" />
   </Configurations>
-  <Project Path="mmvp.csproj" />
+  <Project Path="MarsGridVisualizer.csproj" />
   <Project Path="Tests/Tests.csproj">
     <BuildType Project="Debug" />
   </Project>

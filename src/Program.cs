@@ -2,11 +2,9 @@ using System.Diagnostics;
 using System.Text.Json;
 using Chickensoft.GameTools.Displays;
 using Godot;
-using mmvp.src;
-using mmvp.src.agent;
-using Color = mmvp.src.Color;
+using MarsGridVisualizer.Agents;
 
-namespace mmvp;
+namespace MarsGridVisualizer;
 
 public abstract record GameState
 {

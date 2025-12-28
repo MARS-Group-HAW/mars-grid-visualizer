@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using mmvp.src.agent;
+using MarsGridVisualizer.Agents;
 
-namespace mmvp.src;
+namespace MarsGridVisualizer;
 
 public record AgentJsonData
 {

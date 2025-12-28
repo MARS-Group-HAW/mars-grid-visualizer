@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Godot;
 
-namespace mmvp.src;
+namespace MarsGridVisualizer;
 
 public static class DebugExtensions
 {

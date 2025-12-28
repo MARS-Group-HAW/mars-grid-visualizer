@@ -1,6 +1,6 @@
 using Godot;
 
-namespace BaseMapLayer;
+namespace MarsGridVisualizer;
 
 public partial class BaseMapLayer : TileMapLayer
 {
@@ -18,7 +18,10 @@ public partial class BaseMapLayer : TileMapLayer
 
             Scale = new Vector2(minScale, minScale);
 
-            var tileMapSizeNormalized = new Vector2(tileMapSize.X * minScale, tileMapSize.Y * minScale);
+            var tileMapSizeNormalized = new Vector2(
+                tileMapSize.X * minScale,
+                tileMapSize.Y * minScale
+            );
             Position = (mainSubViewportContainer.Size - tileMapSizeNormalized) / 2;
         };
     }

@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text.Json.Serialization;
 using Godot;
 
-namespace mmvp.src.agent;
+namespace MarsGridVisualizer.Agents;
 
 public static class ColorMethods
 {

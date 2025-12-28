@@ -1,6 +1,4 @@
-using mmvp.src;
-
-namespace Tests;
+namespace MarsGridVisualizer.Tests;
 
 public class UnitTest1
 {

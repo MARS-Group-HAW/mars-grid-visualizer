@@ -1,8 +1,8 @@
 using Godot;
-using mmvp.src.agent;
-using Color = mmvp.src.Color;
+using MarsGridVisualizer.Agents;
+using Color = MarsGridVisualizer.Color;
 
-namespace mmvp;
+namespace MarsGridVisualizer;
 
 public partial class KillFeed : RichTextLabel
 {
