@@ -17,6 +17,7 @@ public abstract record GameState
 
 public partial class Program : Control
 {
+    private const int BarrelRadius = 3;
     private const string WEB_SOCKET_URL = "ws://127.0.0.1:8181";
     private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
@@ -345,10 +346,24 @@ public partial class Program : Control
             oldBarrel.HasExploded = true;
             // show bam sprite
             oldBarrel.RegionRect = tileSetSpritesheet!.GetTileTextureRegion(bamBarrelSpriteIndex);
-            // after timeout show exploded sprite
-            GetTree().CreateTimer(10.0f).Timeout += () =>
-                GD.Print("Timer triggered");
-            oldBarrel.RegionRect = tileSetSpritesheet.GetTileTextureRegion(explodedBarrelSpriteIndex);
+
+            var blastRadius = DrawCircle(
+                new Vector2I(newBarrel.X, newBarrel.Y),
+                BarrelRadius,
+                Color.Red
+            );
+            blastRadius.Width = 5;
+            tileMapLayer!.AddChild(blastRadius);
+
+            var tween = CreateTween();
+            // modulate:a is a [NodePath](https://docs.godotengine.org/en/stable/classes/class_nodepath.html#class-nodepath)
+            // and points to the alpha of the circle
+            tween.TweenProperty(blastRadius, "modulate:a", 0f, 255f);
+            tween.TweenCallback(Callable.From(() =>
+            {
+                oldBarrel.RegionRect = tileSetSpritesheet.GetTileTextureRegion(explodedBarrelSpriteIndex);
+                blastRadius.QueueFree();
+            }));
         }
     }
 }
