@@ -15,11 +15,12 @@ public abstract record GameState
 
 public partial class Program : Control
 {
+    private const string WEB_SOCKET_URL = "ws://127.0.0.1:8181";
     private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     private PackedScene agentScene = GD.Load<PackedScene>("res://src/agent/agent.tscn");
 
-    private WebSocketPeer socket = new();
+    private readonly WebSocketClient client = new();
     private int currentTick = 1;
     private TileMapLayer? tileMapLayer;
     private TileSetAtlasSource? tileSetSpritesheet;
@@ -37,13 +38,40 @@ public partial class Program : Control
         tileMapLayer = GetNode<TileMapLayer>("%TopDownShooterBaseMap");
         tileSetSpritesheet = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
 
-        ConnectWebSocket();
+        client.OnMessage += msg =>
+        {
+            if (gameState is GameState.Loading) gameState = new GameState.Playing();
+            if (gameState is not GameState.Playing) return;
+
+            var parsed = JsonSerializer.Deserialize<AgentJsonData>(msg, jsonOptions);
+            if (parsed == null) { GD.PrintErr("could not serialize json to AgentJsonData"); throw new Exception(); }
+            jsonDataHistory.Add(parsed);
+
+            if (parsed.MapPath is null) throw new Exception("the server did not provide a map path");
+            if (map is null)
+            {
+                map = Map.ReadInMap(parsed.MapPath);
+                map.PopulateTileMap(tileMapLayer!);
+            }
+
+            UpdateCurrentTick(parsed.ExpectingTick);
+            UpdateScores(parsed.Scores);
+            DrawGame(parsed);
+            // FIXME: since we don't have access to the config anymore, there needs to be another way to
+            //        tell, wether the game has ended
+            //        - probably best if we have access to the config afterall then
+            //          we know where the project root is and can in the future maybe
+            //          do other things as well
+            client.Send(currentTick.ToString());
+            currentTick += 1;
+            if (gameState is GameState.Finished) ShowScores();
+        };
+        client.Connect(WEB_SOCKET_URL);
     }
 
     public override void _Process(double delta)
     {
-        WebSocketLoop();
-        if (gameState is GameState.Finished) ShowScores();
+        client.Next();
     }
 
     private void ShowScores()
@@ -116,53 +144,6 @@ public partial class Program : Control
     private static Vector2 CalcPointOnCircle(float angle, float radius)
     {
         return new Vector2(Mathf.Sin(angle) * radius, Mathf.Cos(angle) * radius);
-    }
-
-    private void ConnectWebSocket()
-    {
-        if (socket.ConnectToUrl("ws://127.0.0.1:8181") != Error.Ok)
-        {
-            GD.Print("Could not connect to WebSocket Server. Is the Simulation running?");
-            GetTree().Quit();
-        }
-    }
-
-    private void WebSocketLoop()
-    {
-        socket.Poll();
-
-        if (socket.GetReadyState() is WebSocketPeer.State.Connecting) GD.Print("Connecting to Simulation..");
-        else if (socket.GetReadyState() is WebSocketPeer.State.Open)
-        {
-            if (gameState is not GameState.Playing) gameState = new GameState.Playing();
-            while (socket.GetAvailablePacketCount() > 0)
-            {
-                var message = socket.GetPacket().GetStringFromUtf8();
-                if (string.IsNullOrWhiteSpace(message)) continue;
-
-                var parsed = JsonSerializer.Deserialize<AgentJsonData>(message, jsonOptions);
-                if (parsed == null) { GD.Print("could not serialize json to AgentJsonData"); continue; }
-                jsonDataHistory.Add(parsed);
-
-                if (parsed.MapPath is null) throw new Exception("the server did not provide a map path");
-                map = Map.ReadInMap(parsed.MapPath);
-                map.PopulateTileMap(tileMapLayer!);
-
-                UpdateCurrentTick(parsed.ExpectingTick);
-                UpdateScores(parsed.Scores);
-                DrawGame(parsed);
-                // FIXME: since we don't have access to the config anymore, there needs to be another way to
-                //        tell, wether the game has ended
-                socket.SendText(currentTick.ToString());
-                currentTick += 1;
-            }
-        }
-
-        else if (socket.GetReadyState() is WebSocketPeer.State.Closed)
-        {
-            GD.Print($"WebSocket closed with code: {socket.GetCloseCode()} and reason: {socket.GetCloseReason()}");
-            SetProcess(false);
-        }
     }
 
     private void UpdateCurrentTick(int tick)
