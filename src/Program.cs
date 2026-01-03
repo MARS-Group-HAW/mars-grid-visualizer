@@ -11,6 +11,7 @@ public abstract record GameState
 {
     public sealed record Loading : GameState;
     public sealed record Playing : GameState;
+    public sealed record Paused : GameState;
     public sealed record Finished : GameState;
 }
 
@@ -39,10 +40,13 @@ public partial class Program : Control
         tileMapLayer = GetNode<TileMapLayer>("%TopDownShooterBaseMap");
         tileSetSpritesheet = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
 
+        var playButton = GetNode<PlayButton>("LayoutRoot/Timeline/PlayButton");
+        playButton.PausedChanged += OnPausedChanged;
+
         client.OnMessage += msg =>
         {
             if (gameState is GameState.Loading) gameState = new GameState.Playing();
-            if (gameState is not GameState.Playing) return;
+            if (gameState is GameState.Paused or GameState.Finished) return;
 
             var parsed = JsonSerializer.Deserialize<AgentJsonData>(msg, jsonOptions);
             if (parsed == null) { GD.PrintErr("could not serialize json to AgentJsonData"); throw new Exception(); }
@@ -68,6 +72,15 @@ public partial class Program : Control
             if (gameState is GameState.Finished) ShowScores();
         };
         client.Connect(WEB_SOCKET_URL);
+    }
+
+    private void OnPausedChanged(bool isPaused)
+    {
+        gameState = isPaused ? new GameState.Paused() : new GameState.Playing();
+        if (!isPaused)
+        {
+            client.Send(currentTick.ToString());
+        }
     }
 
     public override void _Process(double delta)

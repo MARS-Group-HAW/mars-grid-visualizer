@@ -619,64 +619,82 @@ layout_mode = 2
 text = "waiting for simulation.."
 label_settings = SubResource("LabelSettings_h2yge")
 
-[node name="HSplitContainer" type="HSplitContainer" parent="."]
+[node name="LayoutRoot" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+alignment = 1
+
+[node name="MainView" type="HSplitContainer" parent="LayoutRoot"]
+layout_mode = 2
+size_flags_vertical = 3
 metadata/_edit_use_anchors_ = true
 
-[node name="LeftPanel" type="VSplitContainer" parent="HSplitContainer"]
+[node name="LeftPanel" type="VSplitContainer" parent="LayoutRoot/MainView"]
 layout_mode = 2
 
-[node name="ScorePanelContainer" type="PanelContainer" parent="HSplitContainer/LeftPanel"]
+[node name="ScorePanelContainer" type="PanelContainer" parent="LayoutRoot/MainView/LeftPanel"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_fyndt")
 
-[node name="ScoreVBoxContainer" type="VBoxContainer" parent="HSplitContainer/LeftPanel/ScorePanelContainer"]
+[node name="ScoreVBoxContainer" type="VBoxContainer" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 
-[node name="ScoreLabel" type="Label" parent="HSplitContainer/LeftPanel/ScorePanelContainer/ScoreVBoxContainer"]
+[node name="CurrentTick" type="Label" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer/ScoreVBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "Score:"
+text = "Current Tick:"
 
-[node name="Score" type="RichTextLabel" parent="HSplitContainer/LeftPanel/ScorePanelContainer/ScoreVBoxContainer"]
+[node name="Tick" type="RichTextLabel" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer/ScoreVBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 bbcode_enabled = true
-text = "Score"
+text = "loading tick"
 fit_content = true
 
-[node name="HSplitContainer" type="HSplitContainer" parent="HSplitContainer"]
+[node name="ScoreLabel" type="Label" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer/ScoreVBoxContainer"]
+layout_mode = 2
+text = "Score:"
+
+[node name="Score" type="RichTextLabel" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer/ScoreVBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+bbcode_enabled = true
+text = "loading score"
+fit_content = true
+
+[node name="HSplitContainer" type="HSplitContainer" parent="LayoutRoot/MainView"]
 layout_mode = 2
 
-[node name="PanelContainer" type="PanelContainer" parent="HSplitContainer/HSplitContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="LayoutRoot/MainView/HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MainPanel" type="VSplitContainer" parent="HSplitContainer/HSplitContainer/PanelContainer"]
+[node name="MainPanel" type="VSplitContainer" parent="LayoutRoot/MainView/HSplitContainer/PanelContainer"]
 layout_mode = 2
 
-[node name="MainSubViewportContainer" type="SubViewportContainer" parent="HSplitContainer/HSplitContainer/PanelContainer/MainPanel"]
+[node name="MainSubViewportContainer" type="SubViewportContainer" parent="LayoutRoot/MainView/HSplitContainer/PanelContainer/MainPanel"]
 unique_name_in_owner = true
 clip_contents = true
 layout_mode = 2
 stretch = true
 mouse_target = true
 
-[node name="MainSubViewport" type="SubViewport" parent="HSplitContainer/HSplitContainer/PanelContainer/MainPanel/MainSubViewportContainer"]
+[node name="MainSubViewport" type="SubViewport" parent="LayoutRoot/MainView/HSplitContainer/PanelContainer/MainPanel/MainSubViewportContainer"]
 handle_input_locally = false
 msaa_2d = 3
 use_taa = true
 canvas_item_default_texture_filter = 3
-size = Vector2i(892, 768)
+size = Vector2i(892, 709)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
-[node name="TopDownShooterBaseMap" type="TileMapLayer" parent="HSplitContainer/HSplitContainer/PanelContainer/MainPanel/MainSubViewportContainer/MainSubViewport"]
+[node name="TopDownShooterBaseMap" type="TileMapLayer" parent="LayoutRoot/MainView/HSplitContainer/PanelContainer/MainPanel/MainSubViewportContainer/MainSubViewport"]
 unique_name_in_owner = true
 texture_filter = 1
 scale = Vector2(0.202363, 0.202363)
@@ -684,16 +702,16 @@ tile_map_data = PackedByteArray("AAAQAAAAAwARAAcAAAARAAAAAwARAAcAAAASAAAAAwARAAc
 tile_set = SubResource("TileSet_7mycd")
 script = ExtResource("4_kmhfv")
 
-[node name="RightPanel" type="VSplitContainer" parent="HSplitContainer/HSplitContainer"]
+[node name="RightPanel" type="VSplitContainer" parent="LayoutRoot/MainView/HSplitContainer"]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 
-[node name="RightPanelContainer" type="PanelContainer" parent="HSplitContainer/HSplitContainer/RightPanel"]
+[node name="RightPanelContainer" type="PanelContainer" parent="LayoutRoot/MainView/HSplitContainer/RightPanel"]
 layout_mode = 2
 theme = ExtResource("4_fyndt")
 theme_override_styles/panel = SubResource("StyleBoxFlat_kmhfv")
 
-[node name="KillFeed" type="RichTextLabel" parent="HSplitContainer/HSplitContainer/RightPanel/RightPanelContainer"]
+[node name="KillFeed" type="RichTextLabel" parent="LayoutRoot/MainView/HSplitContainer/RightPanel/RightPanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 bbcode_enabled = true
@@ -703,6 +721,22 @@ scroll_active = false
 scroll_following = true
 horizontal_alignment = 2
 script = ExtResource("3_1bvp3")
+
+[node name="Timeline" type="VBoxContainer" parent="LayoutRoot"]
+layout_mode = 2
+
+[node name="PlayButton" type="Button" parent="LayoutRoot/Timeline"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+toggle_mode = true
+action_mode = 0
+icon = ExtResource("6_kmhfv")
+icon_alignment = 1
+script = ExtResource("7_rlaii")
+
+[node name="ProgressBar" type="ProgressBar" parent="LayoutRoot/Timeline"]
+layout_mode = 2
 
 [node name="EndScoreLabel" type="RichTextLabel" parent="."]
 unique_name_in_owner = true
@@ -721,6 +755,7 @@ text = "[font_size=100][center]Team Won![/center][/font_size]"
 
 [node name="ConfigFilePopup" type="FileDialog" parent="."]
 unique_name_in_owner = true
+oversampling_override = 1.0
 title = "Open a File"
 initial_position = 2
 size = Vector2i(885, 360)
