@@ -19,6 +19,7 @@ public partial class Program : Control
 {
 	private const string WEB_SOCKET_URL = "ws://127.0.0.1:8181";
 	private const int BarrelRadius = 3;
+	private const float AgentMoveDuration = 0.10f;
 	private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
 	private PackedScene agentScene = GD.Load<PackedScene>("res://src/Domain/Agent/agent.tscn");
@@ -184,6 +185,7 @@ public partial class Program : Control
 
 
 	private readonly Dictionary<string, Agent> existingAgents = [];
+	private readonly Dictionary<string, Tween> agentTweens = [];
 
 	private void DrawAgents(List<Agent> jsonAgents)
 	{
@@ -247,7 +249,20 @@ public partial class Program : Control
 				}
 			}
 
-			agent.Position = tileMapLayer!.MapToLocal(new Vector2I(jsonAgent.X, map!.Size().Y - 1 - jsonAgent.Y));
+			var targetPosition = tileMapLayer!.MapToLocal(new Vector2I(jsonAgent.X, map!.Size().Y - 1 - jsonAgent.Y));
+
+			// kill existing tween if it took too long
+			if (agentTweens.TryGetValue(jsonAgent.Id, out var existingTween) && existingTween.IsValid())
+			{
+				existingTween.Kill();
+			}
+
+			// interpolate between positions
+			var tween = CreateTween();
+			tween.TweenProperty(agent, "position", targetPosition, AgentMoveDuration)
+				.SetTrans(Tween.TransitionType.Linear)
+				.SetEase(Tween.EaseType.Out);
+			agentTweens[jsonAgent.Id] = tween;
 
 			if (jsonAgent.Alive)
 			{
