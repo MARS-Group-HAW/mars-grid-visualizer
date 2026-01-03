@@ -4,6 +4,9 @@ default:
 run:
     dotnet build && godot-mono .
 
+test:
+    dotnet test -v quiet
+
 clean:
     #!/usr/bin/env fish
     set dirs (fd --regex "(obj|bin)" --no-ignore -t d)

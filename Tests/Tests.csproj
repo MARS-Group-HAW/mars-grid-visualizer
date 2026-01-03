@@ -7,10 +7,9 @@
     <RootNamespace>Tests</RootNamespace>
     <TargetFramework>net8.0</TargetFramework>
 
-    <!-- To enable the Microsoft Testing Platform 'dotnet test' experience, add property: -->
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
-    <!-- To enable the Microsoft Testing Platform native command line experience, add property: -->
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
   </PropertyGroup>
 
   <ItemGroup>
