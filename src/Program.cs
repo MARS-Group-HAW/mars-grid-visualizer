@@ -21,7 +21,7 @@ public partial class Program : Control
 	private const int BarrelRadius = 3;
 	private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-	private PackedScene agentScene = GD.Load<PackedScene>("res://src/agent/agent.tscn");
+	private PackedScene agentScene = GD.Load<PackedScene>("res://src/Domain/Agent/agent.tscn");
 
 	private readonly WebSocketClient client = new();
 	private int currentTick = 1;
