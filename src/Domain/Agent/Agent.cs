@@ -25,6 +25,11 @@ public static class ColorMethods
     }
 }
 
+/// <summary>
+/// Used for JSON deserialization.
+/// </summary>
+public record AgentData;
+
 public partial class Agent : Node2D
 {
     public enum Stance

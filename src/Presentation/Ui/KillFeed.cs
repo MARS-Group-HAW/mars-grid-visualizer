@@ -1,8 +1,7 @@
 using Godot;
 using MarsGridVisualizer.Agents;
-using Color = MarsGridVisualizer.Color;
 
-namespace MarsGridVisualizer;
+namespace MarsGridVisualizer.Ui;
 
 public partial class KillFeed : RichTextLabel
 {

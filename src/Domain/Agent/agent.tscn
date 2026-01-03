@@ -1,17 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://cjie0j12xbmuk"]
+[gd_scene format=3 uid="uid://cjie0j12xbmuk"]
 
-[ext_resource type="Script" uid="uid://dh8sd0omkglqh" path="res://src/agent/Agent.cs" id="1_byrto"]
+[ext_resource type="Script" uid="uid://dh8sd0omkglqh" path="res://src/Domain/Agent/Agent.cs" id="1_byrto"]
 [ext_resource type="Texture2D" uid="uid://dmi37v8pxms0a" path="res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_stand.png" id="2_novgp"]
 [ext_resource type="Theme" uid="uid://w2k27pt4cchl" path="res://src/main_theme.tres" id="3_novgp"]
 
-[node name="Agent" type="Node2D" groups=["Agents"]]
+[node name="Agent" type="Node2D" unique_id=1931294424 groups=["Agents"]]
 script = ExtResource("1_byrto")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1752573521]
 rotation = 1.57079
 texture = ExtResource("2_novgp")
 
-[node name="Label" type="RichTextLabel" parent="."]
+[node name="Label" type="RichTextLabel" parent="." unique_id=569561256]
 unique_name_in_owner = true
 anchors_preset = 8
 anchor_left = 0.5

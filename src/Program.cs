@@ -3,6 +3,7 @@ using System.Text.Json;
 using Chickensoft.GameTools.Displays;
 using Godot;
 using MarsGridVisualizer.Agents;
+using MarsGridVisualizer.Ui;
 
 namespace MarsGridVisualizer;
 
@@ -31,9 +32,9 @@ public partial class Program : Control
     public override void _Ready()
     {
         GetWindow().LookGood(
-                WindowScaleBehavior.UIFixed,
-                Display.QHD,
-                maxWindowedSize: 1.0f);
+            WindowScaleBehavior.UIFixed,
+            themeResolution: Display.QHD,
+            maxWindowedSize: 1.0f);
 
         tileMapLayer = GetNode<TileMapLayer>("%TopDownShooterBaseMap");
         tileSetSpritesheet = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
