@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Chickensoft.GameTools.Displays;
 using Godot;
 using MarsGridVisualizer.Agents;
+using MarsGridVisualizer.Infrastructure;
 using MarsGridVisualizer.Ui;
 
 namespace MarsGridVisualizer;
@@ -44,20 +45,22 @@ public partial class Program : Control
 
 		waitingLabel = GetNode<Label>("%WaitingForSimulation");
 		client.OnConnected += () => waitingLabel.Hide();
-		client.OnDisconnected += () =>
+		client.OnDisconnected += (int closeCode, string closeReason) =>
 		{
-			if (gameState is not GameState.Finished)
-			{
-				waitingLabel.Text = "Connection lost. Reconnecting...";
-				waitingLabel.Show();
-			}
+			// TODO: show finish screen
+			if (gameState is GameState.Finished) return;
+			waitingLabel.Text = "Connection lost. Reconnecting...";
+			waitingLabel.Show();
 		};
 
 		var playButton = GetNode<PlayButton>("LayoutRoot/Timeline/PlayButton");
 		playButton.PausedChanged += OnPausedChanged;
 
-		client.OnMessage += model =>
+		var adapter = new Adapter();
+
+		client.OnMessage += (string message) =>
 		{
+			var model = adapter.ModelFrom(message);
 			jsonDataHistory.Add(model);
 
 			if (gameState is GameState.Loading) gameState = new GameState.Playing();

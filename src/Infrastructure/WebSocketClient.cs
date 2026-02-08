@@ -1,18 +1,16 @@
-namespace MarsGridVisualizer;
+namespace MarsGridVisualizer.Infrastructure;
 
 using Godot;
-using MarsGridVisualizer.Infrastructure;
 
-public partial class WebSocketClient
+public class WebSocketClient
 {
 	private readonly WebSocketPeer socket = new();
 	private const float ReconnectDelaySeconds = 2.0f;
 
 	public event Action? OnConnected;
-	public event Action<AgentJsonData>? OnMessage;
-	public event Action? OnDisconnected;
+	public event Action<string>? OnMessage;
+	public event Action<int, string>? OnDisconnected;
 
-	private readonly Adapter adapter = new Adapter();
 	private string? address;
 	private double timeSinceLastAttempt;
 	private bool connected;
@@ -55,8 +53,7 @@ public partial class WebSocketClient
 					var message = socket.GetPacket().GetStringFromUtf8();
 					if (string.IsNullOrWhiteSpace(message)) continue;
 
-					var model = adapter.ModelFrom(message);
-					OnMessage?.Invoke(model);
+					OnMessage?.Invoke(message);
 				}
 				break;
 			case WebSocketPeer.State.Closing:
@@ -69,7 +66,7 @@ public partial class WebSocketClient
 				{
 					GD.Print($"Connection lost (code: {closeCode}, reason: {closeReason}). Reconnecting...");
 					connected = false;
-					OnDisconnected?.Invoke();
+					OnDisconnected?.Invoke(closeCode, closeReason);
 				}
 
 				timeSinceLastAttempt += delta;
