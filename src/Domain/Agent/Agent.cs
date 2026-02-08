@@ -6,23 +6,18 @@ namespace MarsGridVisualizer.Agents;
 
 public static class ColorMethods
 {
-	public static string ColorToHtml(this Color color)
+	public static string ColorToHtml(this Color color) => color switch
 	{
-		return color switch
-		{
-			Color.Red => "#e86a17",
-			Color.Green => "#27ae60",
-			Color.Blue => "#2a87bc",
-			Color.Yellow => "#ffcc00",
-			Color.Grey => "#5f5f5f",
-			_ => throw new UnreachableException(),
-		};
-	}
+		Color.Red => "#e86a17",
+		Color.Green => "#27ae60",
+		Color.Blue => "#2a87bc",
+		Color.Yellow => "#ffcc00",
+		Color.Grey => "#5f5f5f",
+		_ => throw new UnreachableException(),
+	};
 
 	public static Godot.Color ToGodotColor(this Color color)
-	{
-		return Godot.Color.FromHtml(color.ColorToHtml());
-	}
+		=> Godot.Color.FromHtml(color.ColorToHtml());
 }
 
 /// <summary>
@@ -59,16 +54,13 @@ public partial class Agent : Node2D
 		Y = y;
 	}
 
-	public Texture2D GetSprite()
+	public Texture2D GetSprite() => Color switch
 	{
-		return Color switch
-		{
-			Color.Red => GD.Load<Texture2D>("res://assets/agents/red/manRed_machine.png"),
-			Color.Green => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Woman Green/womanGreen_machine.png"),
-			Color.Blue => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
-			Color.Yellow => GD.Load<Texture2D>("res://assets/agents/yellow/manYellow_machine.png"),
-			Color.Grey => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
-			_ => throw new UnreachableException(),
-		};
-	}
+		Color.Red => GD.Load<Texture2D>("res://assets/agents/red/manRed_machine.png"),
+		Color.Green => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Woman Green/womanGreen_machine.png"),
+		Color.Blue => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
+		Color.Yellow => GD.Load<Texture2D>("res://assets/agents/yellow/manYellow_machine.png"),
+		Color.Grey => GD.Load<Texture2D>("res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"),
+		_ => throw new UnreachableException(),
+	};
 }
