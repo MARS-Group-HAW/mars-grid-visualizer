@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Godot;
 
 namespace MarsGridVisualizer;
@@ -6,17 +5,13 @@ namespace MarsGridVisualizer;
 
 public class Map(List<List<Map.Field>> data)
 {
+	private const int wallTerrain = 0;
+
 	private static TileSetCoordinates GetScribbleDungeonTiles()
 	{
 
 		return new TileSetCoordinates(
 			SourceId: 3,
-			Wall: new(new(5, 5), 1),
-			VerticalWall: new(new(5, 5)),
-			LeftUpperWallCorner: new(new(5, 4)),
-			RightUpperWallCorner: new(new(9, 4)),
-			LeftLowerWallCorner: new(new(9, 4)),
-			RightLowerWallCorner: new(new(9, 4)),
 			Floor: new(new(0, 0)),
 			Hill: new(new(5, 0)),
 			Ditch: new(new(0, 0), 1),
@@ -32,12 +27,6 @@ public class Map(List<List<Map.Field>> data)
 
 		return new TileSetCoordinates(
 			SourceId: 0,
-			Wall: new(new(0, 1), 1),
-			VerticalWall: new(new(0, 1)),
-			LeftUpperWallCorner: new(new(0, 0)),
-			RightUpperWallCorner: new(new(9, 4)),
-			LeftLowerWallCorner: new(new(9, 4)),
-			RightLowerWallCorner: new(new(9, 4)),
 			Floor: new(new(4, 2)),
 			Hill: new(new(5, 0)),
 			Ditch: new(new(4, 2), 1),
@@ -53,12 +42,6 @@ public class Map(List<List<Map.Field>> data)
 
 		return new TileSetCoordinates(
 			SourceId: 2,
-			Wall: new(new(11, 4)),
-			VerticalWall: new(new(11, 5)),
-			LeftUpperWallCorner: new(new(9, 4)),
-			RightUpperWallCorner: new(new(10, 4)),
-			LeftLowerWallCorner: new(new(9, 5)),
-			RightLowerWallCorner: new(new(10, 5)),
 			Floor: new(new(22, 14)),
 			Hill: new(new(26, 18)),
 			Ditch: new(new(26, 17)),
@@ -71,12 +54,6 @@ public class Map(List<List<Map.Field>> data)
 
 	private record TileSetCoordinates(
 		int SourceId,
-		TileMapCell Wall,
-		TileMapCell VerticalWall,
-		TileMapCell LeftUpperWallCorner,
-		TileMapCell RightUpperWallCorner,
-		TileMapCell LeftLowerWallCorner,
-		TileMapCell RightLowerWallCorner,
 		TileMapCell Floor,
 		TileMapCell Hill,
 		TileMapCell Ditch,
@@ -154,24 +131,24 @@ public class Map(List<List<Map.Field>> data)
 			"TopDownShooterBaseMap" => GetTopDownShooterTiles(),
 			var other => throw new NotImplementedException($"No TileSet for: {other}"),
 		};
+
+		var wallCells = new Godot.Collections.Array<Vector2I>();
+
 		for (int y = 0; y < data.Count; ++y)
 		{
 			for (int x = 0; x < data[y].Count; ++x)
 			{
 				var fieldValue = data[y][x];
+
+				if (fieldValue == Field.Wall)
+				{
+					wallCells.Add(new Vector2I(x, y));
+					continue;
+				}
+
 				var tileSetField = fieldValue switch
 				{
 					Field.Floor => currentTileSetCoords.Floor,
-					Field.Wall => GetWallPosition(x, y) switch
-					{
-						WallPosition.Horizontal => currentTileSetCoords.Wall,
-						WallPosition.Vertical => currentTileSetCoords.VerticalWall,
-						WallPosition.LeftUpperCorner => currentTileSetCoords.LeftUpperWallCorner,
-						WallPosition.RightUpperCorner => currentTileSetCoords.RightUpperWallCorner,
-						WallPosition.LeftLowerCorner => currentTileSetCoords.LeftLowerWallCorner,
-						WallPosition.RightLowerCorner => currentTileSetCoords.RightLowerWallCorner,
-						_ => throw new UnreachableException(),
-					},
 					Field.Hill => currentTileSetCoords.Hill,
 					Field.Ditch => currentTileSetCoords.Ditch,
 					Field.Water => currentTileSetCoords.Water,
@@ -189,47 +166,8 @@ public class Map(List<List<Map.Field>> data)
 				);
 			}
 		}
+
+		tileMapLayer.SetCellsTerrainConnect(wallCells, terrainSet: 0, terrain: wallTerrain);
 	}
 
-	private enum WallPosition
-	{
-		Horizontal,
-		Vertical,
-		LeftUpperCorner,
-		RightUpperCorner,
-		LeftLowerCorner,
-		RightLowerCorner,
-	}
-
-	private WallPosition GetWallPosition(int x, int y)
-	{
-		bool hasNorth = HasWall(x, y - 1);
-		bool hasSouth = HasWall(x, y + 1);
-		bool hasEast = HasWall(x + 1, y);
-		bool hasWest = HasWall(x - 1, y);
-
-		int wallCount = (hasNorth ? 1 : 0) + (hasSouth ? 1 : 0) +
-						(hasEast ? 1 : 0) + (hasWest ? 1 : 0);
-
-		return wallCount switch
-		{
-			1 => WallPosition.Horizontal,
-			2 when hasNorth && hasSouth => WallPosition.Vertical,
-			2 when hasSouth && hasEast => WallPosition.LeftUpperCorner,
-			2 when hasSouth && hasWest => WallPosition.RightUpperCorner,
-			2 when hasNorth && hasEast => WallPosition.LeftLowerCorner,
-			2 when hasNorth && hasWest => WallPosition.RightLowerCorner,
-			_ => WallPosition.Horizontal,
-
-		};
-	}
-
-	private bool HasWall(int x, int y)
-	{
-		// handle out of bounds
-		if (y < 0 || y >= data.Count || x < 0 || x >= data[y].Count)
-			return false;
-
-		return data[y][x] is Field.Wall;
-	}
 }
