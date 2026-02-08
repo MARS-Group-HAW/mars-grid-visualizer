@@ -27,6 +27,9 @@ content_margin_right = 10.0
 content_margin_bottom = 10.0
 bg_color = Color(0.207843, 0.207843, 0.207843, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rlaii"]
+bg_color = Color(0.9137255, 0.9254902, 0.9372549, 1)
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lquwl"]
 texture = ExtResource("4_1bvp3")
 texture_region_size = Vector2i(64, 64)
@@ -951,10 +954,13 @@ fit_content = true
 
 [node name="HSplitContainer" type="HSplitContainer" parent="LayoutRoot/MainView" unique_id=1618325136]
 layout_mode = 2
+split_offsets = PackedInt32Array(-250)
+split_offset = -250
 
 [node name="PanelContainer" type="PanelContainer" parent="LayoutRoot/MainView/HSplitContainer" unique_id=2034141369]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_rlaii")
 
 [node name="MainPanel" type="VSplitContainer" parent="LayoutRoot/MainView/HSplitContainer/PanelContainer" unique_id=515074704]
 layout_mode = 2
@@ -967,6 +973,7 @@ stretch = true
 mouse_target = true
 
 [node name="MainSubViewport" type="SubViewport" parent="LayoutRoot/MainView/HSplitContainer/PanelContainer/MainPanel/MainSubViewportContainer" unique_id=361266038]
+transparent_bg = true
 handle_input_locally = false
 msaa_2d = 3
 use_taa = true
