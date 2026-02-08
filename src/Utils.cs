@@ -3,6 +3,21 @@ using Godot;
 
 namespace MarsGridVisualizer;
 
+public static class Colours
+{
+	public const string Blue = "#5f87d8";
+	public const string Yellow = "#ffd724";
+	public const string Red = "#f28578";
+	public const string Orange = "#ffa538";
+	public const string Green = "#b8db6b";
+
+	public static readonly string[] All = [Blue, Yellow, Red, Orange, Green];
+
+	public static string GetRandom() => All[Random.Shared.Next(All.Length)];
+
+	public static Godot.Color ToGodotColor(this string str) => Godot.Color.FromHtml(str);
+}
+
 public static class DebugExtensions
 {
 	private static readonly JsonSerializerOptions jsonOptions = new()
