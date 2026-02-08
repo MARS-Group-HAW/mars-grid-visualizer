@@ -2,7 +2,9 @@ using System.Diagnostics;
 using Chickensoft.GameTools.Displays;
 using Godot;
 using MarsGridVisualizer.Agents;
+using MarsGridVisualizer.Domain;
 using MarsGridVisualizer.Infrastructure;
+using MarsGridVisualizer.Presentation;
 using MarsGridVisualizer.Ui;
 
 namespace MarsGridVisualizer;
@@ -30,7 +32,10 @@ public partial class Program : Control
 	private TileSetAtlasSource? tileSetSpritesheet;
 	private Map? map;
 	private readonly List<AgentJsonData> jsonDataHistory = [];
+	private readonly StateManager store = new();
 	private GameState gameState = new GameState.Loading();
+	private Godot2DRenderer renderer = new();
+	private readonly bool useLaserTagApi = false;
 
 	public override void _Ready()
 	{
@@ -39,9 +44,12 @@ public partial class Program : Control
 			themeResolution: Display.QHD,
 			maxWindowedSize: 1.0f);
 
+		AddChild(renderer);
+
 		tileMapLayer = GetNode<BaseMapLayer>("%TopDownShooterBaseMap");
 		tileSetSpritesheet = (TileSetAtlasSource)
 			tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
+		renderer.TileMapLayer = tileMapLayer;
 
 		waitingLabel = GetNode<Label>("%WaitingForSimulation");
 		client.OnConnected += () => waitingLabel.Hide();
@@ -58,34 +66,64 @@ public partial class Program : Control
 
 		var adapter = new Adapter();
 
-		client.OnMessage += (string message) =>
+		if (useLaserTagApi)
 		{
-			var model = adapter.ModelFrom(message);
-			jsonDataHistory.Add(model);
-
-			if (gameState is GameState.Loading) gameState = new GameState.Playing();
-			if (gameState is GameState.Paused or GameState.Finished) return;
-
-			if (map is null)
+			client.OnMessage += (string message) =>
 			{
-				map = Map.ReadInMap(model.MapPath);
-				map.PopulateTileMap(tileMapLayer);
-				tileMapLayer.UpdateScaleAndPosition();
-			}
+				var model = adapter.ModelFrom(message);
+				jsonDataHistory.Add(model);
 
-			UpdateCurrentTick(model.ExpectingTick);
-			UpdateScores(model.Scores);
-			DrawGame(model);
-			// FIXME: since we don't have access to the config anymore, there needs to be another way to
-			//        tell, wether the game has ended
-			//        - probably best if we have access to the config afterall then
-			//          we know where the project root is and can in the future maybe
-			//          do other things as well
-			client.Send(currentTick.ToString());
-			currentTick += 1;
-			if (gameState is GameState.Finished) ShowScores();
-		};
-		client.Connect(WEB_SOCKET_URL);
+				if (gameState is GameState.Loading)
+					gameState = new GameState.Playing();
+				if (gameState is GameState.Paused or GameState.Finished)
+					return;
+
+				if (map is null)
+				{
+					map = Map.ReadInMap(model.MapPath);
+					map.PopulateTileMap(tileMapLayer);
+					tileMapLayer.UpdateScaleAndPosition();
+				}
+
+				UpdateCurrentTick(model.ExpectingTick);
+				UpdateScores(model.Scores);
+				DrawGame(model);
+				// FIXME: since we don't have access to the config anymore, there needs to be another way to
+				//        tell, wether the game has ended
+				//        - probably best if we have access to the config afterall then
+				//          we know where the project root is and can in the future maybe
+				//          do other things as well
+				client.Send(currentTick.ToString());
+				currentTick += 1;
+				if (gameState is GameState.Finished)
+					ShowScores();
+			};
+			client.Connect(WEB_SOCKET_URL);
+		}
+		else
+		{
+			client.OnMessage += message =>
+			{
+				// - TODO: pull for /progress info and merge into one state
+				//   - probably good if there is an extra class
+				// - TODO: investigate how /progress looks like when CSV or DB is
+				//   the source
+				var model =
+					adapter.ModelFromPythonViz(message)
+					?? throw new NotImplementedException("model is null");
+				store.Add(model.ToState());
+			};
+			client.Connect("ws://127.0.0.1:4567/vis");
+
+			var timer = new Godot.Timer { WaitTime = 0.1, Autostart = true };
+			timer.Timeout += () =>
+			{
+				var tick = store.Next();
+				if (tick is { } model)
+					renderer.Render(new State(tick.CurrentTick, tick.AgentTypes));
+			};
+			AddChild(timer);
+		}
 	}
 
 	private void OnPausedChanged(bool isPaused)

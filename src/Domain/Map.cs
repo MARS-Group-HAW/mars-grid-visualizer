@@ -1,6 +1,6 @@
 using Godot;
 
-namespace MarsGridVisualizer;
+namespace MarsGridVisualizer.Domain;
 
 
 public class Map(List<List<Map.Field>> data)
