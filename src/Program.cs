@@ -24,7 +24,7 @@ public partial class Program : Control
 
 	private readonly WebSocketClient client = new();
 	private int currentTick = 1;
-	private TileMapLayer? tileMapLayer;
+	private BaseMapLayer? tileMapLayer;
 	private TileSetAtlasSource? tileSetSpritesheet;
 	private Map? map;
 	private readonly List<AgentJsonData> jsonDataHistory = [];
@@ -37,7 +37,7 @@ public partial class Program : Control
 			themeResolution: Display.QHD,
 			maxWindowedSize: 1.0f);
 
-		tileMapLayer = GetNode<TileMapLayer>("%TopDownShooterBaseMap");
+		tileMapLayer = GetNode<BaseMapLayer>("%TopDownShooterBaseMap");
 		tileSetSpritesheet = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
 
 		var playButton = GetNode<PlayButton>("LayoutRoot/Timeline/PlayButton");
@@ -54,6 +54,7 @@ public partial class Program : Control
 			{
 				map = Map.ReadInMap(model.MapPath);
 				map.PopulateTileMap(tileMapLayer);
+				tileMapLayer.UpdateScaleAndPosition();
 			}
 
 			UpdateCurrentTick(model.ExpectingTick);
@@ -82,7 +83,7 @@ public partial class Program : Control
 
 	public override void _Process(double delta)
 	{
-		client.Next();
+		client.Next(delta);
 	}
 
 	private void ShowScores()
