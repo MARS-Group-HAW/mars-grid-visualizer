@@ -6,13 +6,13 @@ namespace MarsGridVisualizer;
 public record AgentJsonData
 {
 	[JsonPropertyName("mapPath")]
-	public string? MapPath { get; set; } = null;
+	public required string MapPath { get; set; }
 
 	[JsonPropertyName("gameMode")]
 	public GameMode? GameMode { get; set; } = null;
 
 	[JsonPropertyName("expectingTick")]
-	public int ExpectingTick { get; set; } = -1;
+	public required int ExpectingTick { get; set; }
 
 	[JsonPropertyName("agents")]
 	public List<Agent> Agents { get; set; } = [];

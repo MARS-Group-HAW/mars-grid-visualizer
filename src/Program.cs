@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Text.Json;
 using Chickensoft.GameTools.Displays;
 using Godot;
 using MarsGridVisualizer.Agents;
@@ -20,7 +19,6 @@ public partial class Program : Control
 	private const string WEB_SOCKET_URL = "ws://127.0.0.1:8181";
 	private const int BarrelRadius = 3;
 	private const float AgentMoveDuration = 0.10f;
-	private readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
 	private PackedScene agentScene = GD.Load<PackedScene>("res://src/Domain/Agent/agent.tscn");
 
@@ -45,25 +43,22 @@ public partial class Program : Control
 		var playButton = GetNode<PlayButton>("LayoutRoot/Timeline/PlayButton");
 		playButton.PausedChanged += OnPausedChanged;
 
-		client.OnMessage += msg =>
+		client.OnMessage += model =>
 		{
+			jsonDataHistory.Add(model);
+
 			if (gameState is GameState.Loading) gameState = new GameState.Playing();
 			if (gameState is GameState.Paused or GameState.Finished) return;
 
-			var parsed = JsonSerializer.Deserialize<AgentJsonData>(msg, jsonOptions);
-			if (parsed == null) { GD.PrintErr("could not serialize json to AgentJsonData"); throw new Exception(); }
-			jsonDataHistory.Add(parsed);
-
-			if (parsed.MapPath is null) throw new Exception("the server did not provide a map path");
 			if (map is null)
 			{
-				map = Map.ReadInMap(parsed.MapPath);
-				map.PopulateTileMap(tileMapLayer!);
+				map = Map.ReadInMap(model.MapPath);
+				map.PopulateTileMap(tileMapLayer);
 			}
 
-			UpdateCurrentTick(parsed.ExpectingTick);
-			UpdateScores(parsed.Scores);
-			DrawGame(parsed);
+			UpdateCurrentTick(model.ExpectingTick);
+			UpdateScores(model.Scores);
+			DrawGame(model);
 			// FIXME: since we don't have access to the config anymore, there needs to be another way to
 			//        tell, wether the game has ended
 			//        - probably best if we have access to the config afterall then

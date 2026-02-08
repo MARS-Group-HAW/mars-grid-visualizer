@@ -1,15 +1,17 @@
 namespace MarsGridVisualizer;
 
 using Godot;
+using MarsGridVisualizer.Infrastructure;
 
 public partial class WebSocketClient
 {
 	private readonly WebSocketPeer socket = new();
 
 	public event Action? OnConnected;
-	public event Action<string>? OnMessage;
+	public event Action<AgentJsonData>? OnMessage;
 	public event Action<int, string>? OnDisconnected;
 
+	private readonly Adapter adapter = new Adapter();
 	public void Connect(string address)
 	{
 		if (socket.ConnectToUrl(address) != Error.Ok)
@@ -33,7 +35,8 @@ public partial class WebSocketClient
 					var message = socket.GetPacket().GetStringFromUtf8();
 					if (string.IsNullOrWhiteSpace(message)) continue;
 
-					OnMessage?.Invoke(message);
+					var model = adapter.ModelFrom(message);
+					OnMessage?.Invoke(model);
 				}
 				break;
 			case WebSocketPeer.State.Closed:
