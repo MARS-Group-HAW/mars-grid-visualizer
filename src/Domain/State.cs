@@ -1,6 +1,11 @@
+using MarsGridVisualizer.Infrastructure;
+
 namespace MarsGridVisualizer.Domain;
 
-public record Entity(long Id, int X, int Y, int Bearing);
+public readonly record struct Entity(long Id, int X, int Y, int Bearing)
+{
+	static internal Entity FromJsonEntity(JsonEntity e) => new(e.Id, e.X, e.Y, e.B);
+}
 
 public class State(int currentTick, Dictionary<string, Entity[]> agentTypes)
 {
@@ -22,5 +27,17 @@ public class State(int currentTick, Dictionary<string, Entity[]> agentTypes)
 				throw new ArgumentException("Received duplicate Entities");
 			else
 				AgentTypes[key] = other.AgentTypes[key];
+	}
+
+	internal static State FromJsonModel(JsonModel model)
+	{
+		var mapped = new Entity[model.Entities.Length];
+		for (var i = 0; i < model.Entities.Length; i++)
+			mapped[i] = Entity.FromJsonEntity(model.Entities[i]);
+
+		return new(model.CurrentTick, new Dictionary<string, Entity[]>
+		{
+			[model.TypeName] = mapped,
+		});
 	}
 }

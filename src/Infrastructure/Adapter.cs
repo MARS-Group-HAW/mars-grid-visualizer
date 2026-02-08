@@ -1,37 +1,23 @@
 using Godot;
-using MarsGridVisualizer.Domain;
 using System.Text.Json;
 using J = System.Text.Json.Serialization.JsonPropertyNameAttribute;
 
 namespace MarsGridVisualizer.Infrastructure;
 
-public class Model
+public class JsonModel
 {
 	[J("currentTick")] public int CurrentTick { get; set; }
 	[J("typeName")] public required string TypeName { get; set; }
 	[J("t")] public int LayerId { get; set; }
-	[J("entities")] public required Entity[] Entities { get; set; }
-
-	internal State ToState() =>
-		new(
-			CurrentTick,
-			new Dictionary<string, Domain.Entity[]>
-			{
-				[TypeName] = Entities
-					.Select(jsonEntity => jsonEntity.ToEntity())
-					.ToArray(),
-			}
-		);
+	[J("entities")] public required JsonEntity[] Entities { get; set; }
 }
 
-public class Entity
+public struct JsonEntity
 {
 	[J("key")] public long Id { get; set; }
 	[J("x")] public int X { get; set; }
 	[J("y")] public int Y { get; set; }
 	[J("b")] public int B { get; set; }
-
-	internal Domain.Entity ToEntity() => new(Id, X, Y, B);
 }
 
 /** <summary>
@@ -59,9 +45,9 @@ public class Adapter
 		return parsed;
 	}
 
-	public Model? ModelFromPythonViz(string message)
+	public JsonModel? ModelFromPythonViz(string message)
 	{
-		var parsed = JsonSerializer.Deserialize<Model>(message, jsonOptions);
+		var parsed = JsonSerializer.Deserialize<JsonModel>(message, jsonOptions);
 		return parsed;
 	}
 }

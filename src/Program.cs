@@ -111,7 +111,7 @@ public partial class Program : Control
 				var model =
 					adapter.ModelFromPythonViz(message)
 					?? throw new NotImplementedException("model is null");
-				store.Add(model.ToState());
+				store.Add(State.FromJsonModel(model));
 			};
 			client.Connect("ws://127.0.0.1:4567/vis");
 

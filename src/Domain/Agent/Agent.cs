@@ -20,11 +20,6 @@ public static class ColorMethods
 		=> Godot.Color.FromHtml(color.ColorToHtml());
 }
 
-/// <summary>
-/// Used for JSON deserialization.
-/// </summary>
-public record AgentData;
-
 public partial class Agent : Node2D
 {
 	public enum Stance
