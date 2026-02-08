@@ -15,7 +15,7 @@ outline_size = 39
 outline_color = Color(0.47876, 0.133588, 0.0491394, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_h2yge"]
-font_size = 94
+font_size = 59
 font_color = Color(0.867441, 0.291424, 0.153771, 1)
 outline_size = 39
 outline_color = Color(0.47876, 0.133588, 0.0491394, 1)
@@ -788,9 +788,8 @@ label_settings = SubResource("LabelSettings_1bvp3")
 
 [node name="WaitingForSimulation" type="Label" parent="ErrorLabelsContainer" unique_id=1780473234]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
-text = "waiting for simulation.."
+text = "Connecting to simulation..."
 label_settings = SubResource("LabelSettings_h2yge")
 
 [node name="LayoutRoot" type="VBoxContainer" parent="." unique_id=429205210]

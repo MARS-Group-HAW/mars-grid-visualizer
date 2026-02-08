@@ -10,7 +10,7 @@ public partial class WebSocketClient
 
 	public event Action? OnConnected;
 	public event Action<AgentJsonData>? OnMessage;
-	public event Action<int, string>? OnDisconnected;
+	public event Action? OnDisconnected;
 
 	private readonly Adapter adapter = new Adapter();
 	private string? address;
@@ -69,7 +69,7 @@ public partial class WebSocketClient
 				{
 					GD.Print($"Connection lost (code: {closeCode}, reason: {closeReason}). Reconnecting...");
 					connected = false;
-					OnDisconnected?.Invoke(closeCode, closeReason);
+					OnDisconnected?.Invoke();
 				}
 
 				timeSinceLastAttempt += delta;

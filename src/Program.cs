@@ -24,6 +24,7 @@ public partial class Program : Control
 
 	private readonly WebSocketClient client = new();
 	private int currentTick = 1;
+	private Label? waitingLabel;
 	private BaseMapLayer? tileMapLayer;
 	private TileSetAtlasSource? tileSetSpritesheet;
 	private Map? map;
@@ -38,7 +39,19 @@ public partial class Program : Control
 			maxWindowedSize: 1.0f);
 
 		tileMapLayer = GetNode<BaseMapLayer>("%TopDownShooterBaseMap");
-		tileSetSpritesheet = (TileSetAtlasSource)tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
+		tileSetSpritesheet = (TileSetAtlasSource)
+			tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
+
+		waitingLabel = GetNode<Label>("%WaitingForSimulation");
+		client.OnConnected += () => waitingLabel.Hide();
+		client.OnDisconnected += () =>
+		{
+			if (gameState is not GameState.Finished)
+			{
+				waitingLabel.Text = "Connection lost. Reconnecting...";
+				waitingLabel.Show();
+			}
+		};
 
 		var playButton = GetNode<PlayButton>("LayoutRoot/Timeline/PlayButton");
 		playButton.PausedChanged += OnPausedChanged;
