@@ -6,30 +6,50 @@ using MarsGridVisualizer.Infrastructure;
 public partial class WebSocketClient
 {
 	private readonly WebSocketPeer socket = new();
+	private const float ReconnectDelaySeconds = 2.0f;
 
 	public event Action? OnConnected;
 	public event Action<AgentJsonData>? OnMessage;
 	public event Action<int, string>? OnDisconnected;
 
 	private readonly Adapter adapter = new Adapter();
+	private string? address;
+	private double timeSinceLastAttempt;
+	private bool connected;
+
 	public void Connect(string address)
 	{
-		if (socket.ConnectToUrl(address) != Error.Ok)
-		{
-			throw new Exception("Could not connect to WebSocket Server. Is the Simulation running?");
-		}
+		this.address = address;
+		TryConnect();
 	}
 
-	public void Next()
+	private void TryConnect()
+	{
+		if (address is null) return;
+
+		var error = socket.ConnectToUrl(address);
+		if (error != Error.Ok)
+		{
+			GD.Print($"Connection attempt failed (Error: {error}). Will retry...");
+		}
+		timeSinceLastAttempt = 0;
+	}
+
+	public void Next(double delta)
 	{
 		socket.Poll();
 
 		switch (socket.GetReadyState())
 		{
 			case WebSocketPeer.State.Connecting:
-				GD.Print("Connecting to Simulation..");
 				break;
 			case WebSocketPeer.State.Open:
+				if (!connected)
+				{
+					GD.Print("Connected to Simulation.");
+					connected = true;
+					OnConnected?.Invoke();
+				}
 				while (socket.GetAvailablePacketCount() > 0)
 				{
 					var message = socket.GetPacket().GetStringFromUtf8();
@@ -39,16 +59,25 @@ public partial class WebSocketClient
 					OnMessage?.Invoke(model);
 				}
 				break;
-			case WebSocketPeer.State.Closed:
-				// TODO: Figure out what I want to happen when the socket closed
-				GD.PrintErr($"WebSocket closed with code: {socket.GetCloseCode()} and reason: {socket.GetCloseReason()}");
+			case WebSocketPeer.State.Closing:
 				break;
+			case WebSocketPeer.State.Closed:
+				var closeCode = socket.GetCloseCode();
+				var closeReason = socket.GetCloseReason();
 
-			default:
-				// TODO: missing case is Closing
-				// Summary:
-				//     The connection is in the process of closing. This means a close request has been
-				//     sent to the remote peer but confirmation has not been received.
+				if (connected)
+				{
+					GD.Print($"Connection lost (code: {closeCode}, reason: {closeReason}). Reconnecting...");
+					connected = false;
+					OnDisconnected?.Invoke(closeCode, closeReason);
+				}
+
+				timeSinceLastAttempt += delta;
+				if (timeSinceLastAttempt >= ReconnectDelaySeconds)
+				{
+					GD.Print("Attempting to reconnect...");
+					TryConnect();
+				}
 				break;
 		}
 	}
