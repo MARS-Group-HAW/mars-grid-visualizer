@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dwvd2qhufcsif"
-valid=false
+path="res://.godot/imported/tilesheet_complete.png-baba82490eb7e057a2d4652bc283233f.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/kenney_top-down-shooter/Tilesheet/tilesheet_complete.png"
+dest_files=["res://.godot/imported/tilesheet_complete.png-baba82490eb7e057a2d4652bc283233f.ctex"]
 
 [params]
 
