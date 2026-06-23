@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cy2x2a0tw63mf"
-valid=false
+uid="uid://3fpixgdr5tkb"
+path="res://.godot/imported/manBrown_machine.png-c86857aa58a6e5cae448f7912db73504.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/kenney_top-down-shooter/PNG/Man Brown/manBrown_machine.png"
+dest_files=["res://.godot/imported/manBrown_machine.png-c86857aa58a6e5cae448f7912db73504.ctex"]
 
 [params]
 

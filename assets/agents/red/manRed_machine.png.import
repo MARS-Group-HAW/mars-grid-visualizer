@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://du462kqhmsqgj"
-valid=false
+uid="uid://v0in6rb4qwad"
+path="res://.godot/imported/manRed_machine.png-ed906df624f8db6f6df76f6a4cbc256f.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/agents/red/manRed_machine.png"
+dest_files=["res://.godot/imported/manRed_machine.png-ed906df624f8db6f6df76f6a4cbc256f.ctex"]
 
 [params]
 

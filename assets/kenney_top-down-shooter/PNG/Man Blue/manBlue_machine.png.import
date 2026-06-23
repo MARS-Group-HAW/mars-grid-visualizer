@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://defjm6gsbmvak"
-valid=false
+uid="uid://c120po46olqri"
+path="res://.godot/imported/manBlue_machine.png-1b29949261563f739d2faa0d5830577c.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_machine.png"
+dest_files=["res://.godot/imported/manBlue_machine.png-1b29949261563f739d2faa0d5830577c.ctex"]
 
 [params]
 

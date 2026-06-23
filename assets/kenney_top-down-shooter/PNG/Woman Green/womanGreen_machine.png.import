@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bxhlk1cmvfjn1"
-valid=false
+uid="uid://c3gua0sdb1dsl"
+path="res://.godot/imported/womanGreen_machine.png-b5713f2f2ac0cb0d14c45a8d1fac2076.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/kenney_top-down-shooter/PNG/Woman Green/womanGreen_machine.png"
+dest_files=["res://.godot/imported/womanGreen_machine.png-b5713f2f2ac0cb0d14c45a8d1fac2076.ctex"]
 
 [params]
 

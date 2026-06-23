@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://qegdy3b3lslb"
-valid=false
+uid="uid://c3g3pgwhsi5s2"
+path="res://.godot/imported/manYellow_machine.png-5d081a6f62d32fa6e850bc5881272468.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/agents/yellow/manYellow_machine.png"
+dest_files=["res://.godot/imported/manYellow_machine.png-5d081a6f62d32fa6e850bc5881272468.ctex"]
 
 [params]
 

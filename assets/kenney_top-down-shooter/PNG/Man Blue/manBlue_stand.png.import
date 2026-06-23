@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dmi37v8pxms0a"
-valid=false
+uid="uid://dytjqbslmh8l4"
+path="res://.godot/imported/manBlue_stand.png-ffc90c59774ff2e0e12d2134a9730a57.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/kenney_top-down-shooter/PNG/Man Blue/manBlue_stand.png"
+dest_files=["res://.godot/imported/manBlue_stand.png-ffc90c59774ff2e0e12d2134a9730a57.ctex"]
 
 [params]
 

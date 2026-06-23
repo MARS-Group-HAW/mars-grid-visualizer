@@ -2,12 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cmufmni8tqwfa"
-valid=false
+uid="uid://cq1avbtw0yfid"
+path="res://.godot/imported/robot1_machine.png-1916d209d6841dac035e121642d0d2db.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/kenney_top-down-shooter/PNG/Robot 1/robot1_machine.png"
+dest_files=["res://.godot/imported/robot1_machine.png-1916d209d6841dac035e121642d0d2db.ctex"]
 
 [params]
 
