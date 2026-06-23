@@ -1,6 +1,6 @@
 using Godot;
 
-namespace MarsGridVisualizer;
+namespace MarsGridVisualizer.Infrastructure;
 
 public partial class BaseMapLayer : TileMapLayer
 {

@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://baki32g4qrp7a" path="res://src/Presentation/Ui/KillFeed.cs" id="3_1bvp3"]
 [ext_resource type="Texture2D" uid="uid://dwvd2qhufcsif" path="res://assets/kenney_top-down-shooter/Tilesheet/tilesheet_complete.png" id="4_1bvp3"]
 [ext_resource type="Theme" uid="uid://w2k27pt4cchl" path="res://src/main_theme.tres" id="4_fyndt"]
-[ext_resource type="Script" uid="uid://uuywhc01w4im" path="res://src/BaseMapLayer.cs" id="4_kmhfv"]
+[ext_resource type="Script" uid="uid://uuywhc01w4im" path="res://src/Infrastructure/BaseMapLayer.cs" id="4_kmhfv"]
 [ext_resource type="Texture2D" uid="uid://bfbhiqo16dfb2" path="res://assets/icons/Play.svg" id="6_kmhfv"]
 [ext_resource type="Script" uid="uid://bnbnea77bqrun" path="res://src/Presentation/Ui/PlayButton.cs" id="7_rlaii"]
 
