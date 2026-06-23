@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using Godot;
+using Color = MarsGridVisualizer.LaserTag.Color;
 
 namespace MarsGridVisualizer.Agents;
 

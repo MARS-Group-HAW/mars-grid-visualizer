@@ -1,6 +1,7 @@
 using Godot;
 using System.Text.Json;
 using J = System.Text.Json.Serialization.JsonPropertyNameAttribute;
+using MarsGridVisualizer.LaserTag;
 
 namespace MarsGridVisualizer.Infrastructure;
 
@@ -25,15 +26,15 @@ public struct JsonEntity
  * to structures the visualization understands.
  * </summary>
  */
-public class Adapter
+public static class Adapter
 {
-	private readonly JsonSerializerOptions jsonOptions = new()
+	private static readonly JsonSerializerOptions jsonOptions = new()
 	{
 		PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
 		PropertyNameCaseInsensitive = true,
 	};
 
-	public AgentJsonData ModelFrom(string message)
+	public static AgentJsonData ModelFrom(string message)
 	{
 		var parsed = JsonSerializer.Deserialize<AgentJsonData>(message, jsonOptions);
 		if (parsed == null)
@@ -45,7 +46,7 @@ public class Adapter
 		return parsed;
 	}
 
-	public JsonModel? ModelFromPythonViz(string message)
+	public static JsonMessages? ModelFromPythonViz(string message)
 	{
 		var parsed = JsonSerializer.Deserialize<JsonModel>(message, jsonOptions);
 		return parsed;
