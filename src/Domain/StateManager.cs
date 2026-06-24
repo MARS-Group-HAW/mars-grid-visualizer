@@ -11,6 +11,9 @@ public class StateManager
 	public bool HasAny => ticks.Count > 0;
 	public bool IsAtLatest => HasAny && currentTick >= LatestTick;
 
+	public long? MaxTicks { get; set; }
+	public Dictionary<string, decimal>? WorldSize { get; set; }
+
 	public void Add(State tick)
 	{
 		if (ticks.TryGetValue(tick.CurrentTick, out var existing))

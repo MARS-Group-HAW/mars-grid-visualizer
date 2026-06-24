@@ -8,10 +8,16 @@ public readonly record struct Entity(long Id, int X, int Y, int Bearing)
 	static internal Entity FromJsonEntity(JsonEntity e) => new(e.Id, e.X, e.Y, e.B);
 }
 
-public class State(int currentTick, Dictionary<string, Entity[]> agentTypes)
+public class State(
+	long currentTick,
+	Dictionary<string, Entity[]> agentTypes,
+	Dictionary<long, RasterLayer> rasters,
+	Dictionary<long, VectorLayer> vectors)
 {
-	public int CurrentTick { get; } = currentTick;
+	public long CurrentTick { get; } = currentTick;
 	public Dictionary<string, Entity[]> AgentTypes { get; } = agentTypes;
+	public Dictionary<long, RasterLayer> Rasters { get; } = rasters;
+	public Dictionary<long, VectorLayer> Vectors { get; } = vectors;
 
 	public void Merge(State other)
 	{
@@ -28,29 +34,54 @@ public class State(int currentTick, Dictionary<string, Entity[]> agentTypes)
 				throw new ArgumentException("Received duplicate Entities");
 			else
 				AgentTypes[key] = other.AgentTypes[key];
+
+		foreach (var (key, value) in other.Rasters)
+			if (!Rasters.TryAdd(key, value))
+				throw new ArgumentException($"Received duplicate Raster layer {key}");
+
+		foreach (var (key, value) in other.Vectors)
+			if (!Vectors.TryAdd(key, value))
+				throw new ArgumentException($"Received duplicate Vector layer {key}");
 	}
 
-	internal static State FromJsonModel(JsonMessages msg)
+	internal static State FromJsonModel(JsonMessages msg) => msg switch
 	{
-		// TODO:
-		// JsonMessages.EntityUpdate state = msg switch
-		// {
-		// 	JsonMessages.InitialStateMessage initial => throw new NotImplementedException(),
-		// 	JsonMessages.EntityUpdate update => throw new NotImplementedException(),
-		// 	JsonMessages.RasterUpdate update => throw new NotImplementedException(),
-		// 	JsonMessages.VectorUpdate update => throw new NotImplementedException(),
-		// 	_ => throw new UnreachableException(),
-		// };
-		//
+		JsonMessages.InitialStateMessage m => new(
+			m.CurrentTick,
+			[],
+			m.Rasters.ToDictionary(r => r.LayerId),
+			m.Vectors.ToDictionary(v => v.LayerId)
+		),
 
-		var state = (JsonMessages.EntityUpdate)msg;
-		var mapped = new Entity[state.Entities.Length];
-		for (var i = 0; i < state.Entities.Length; i++)
-			mapped[i] = Entity.FromJsonEntity(state.Entities[i]);
+		JsonMessages.EntityUpdate m => new(
+			m.CurrentTick,
+			new Dictionary<string, Entity[]> { [m.TypeName] = MapEntities(m.Entities) },
+			[],
+			[]
+		),
 
-		return new(state.CurrentTick, new Dictionary<string, Entity[]>
-		{
-			[state.TypeName] = mapped,
-		});
+		JsonMessages.RasterUpdate m => new(
+			m.CurrentTick,
+			[],
+			m.Rasters.ToDictionary(r => r.LayerId),
+			[]
+		),
+
+		JsonMessages.VectorUpdate m => new(
+			m.CurrentTick,
+			[],
+			[],
+			m.Vectors.ToDictionary(v => v.LayerId)
+		),
+
+		_ => throw new UnreachableException(),
+	};
+
+	private static Entity[] MapEntities(JsonEntity[] entities)
+	{
+		var mapped = new Entity[entities.Length];
+		for (var i = 0; i < entities.Length; i++)
+			mapped[i] = Entity.FromJsonEntity(entities[i]);
+		return mapped;
 	}
 }

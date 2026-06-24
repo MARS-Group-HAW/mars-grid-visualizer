@@ -75,6 +75,11 @@ public partial class Program : Control
 		{
 			var msg = Adapter.ModelFromPythonViz(message);
 			if (msg is null) return;
+			if (msg is JsonMessages.InitialStateMessage initial)
+			{
+				store.MaxTicks = initial.MaxTicks;
+				store.WorldSize = initial.WorldSize;
+			}
 			var state = State.FromJsonModel(msg);
 			store.Add(state);
 			RefreshScrubberBounds();
@@ -161,7 +166,7 @@ public partial class Program : Control
 	private void RenderCurrent()
 	{
 		if (store.Current is not { } current) return;
-		renderer.Render(new State(current.CurrentTick, current.AgentTypes));
+		renderer.Render(current);
 	}
 
 	private void SyncScrubberToCursor()
