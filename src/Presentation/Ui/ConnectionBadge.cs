@@ -11,7 +11,7 @@ public enum ConnectionState
 
 public partial class ConnectionBadge : PanelContainer
 {
-	private ColorRect dot = null!;
+	private StyleBoxFlat dotStyle = null!;
 	private Label statusLabel = null!;
 
 	private static readonly Color connectingColor = Colours.Orange.ToGodotColor();
@@ -20,14 +20,14 @@ public partial class ConnectionBadge : PanelContainer
 
 	public override void _Ready()
 	{
-		dot = GetNode<ColorRect>("HBox/Dot");
+		dotStyle = (StyleBoxFlat)GetNode<Panel>("HBox/Dot").GetThemeStylebox("panel");
 		statusLabel = GetNode<Label>("HBox/StatusLabel");
 		SetState(ConnectionState.Connecting);
 	}
 
 	public void SetState(ConnectionState state)
 	{
-		(dot.Color, statusLabel.Text) = state switch
+		(dotStyle.BgColor, statusLabel.Text) = state switch
 		{
 			ConnectionState.Connecting => (connectingColor, "Connecting…"),
 			ConnectionState.Connected => (connectedColor, "Connected"),

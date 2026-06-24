@@ -8,9 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://bfbhiqo16dfb2" path="res://assets/icons/Play.svg" id="6_kmhfv"]
 [ext_resource type="Script" uid="uid://bnbnea77bqrun" path="res://src/Presentation/Ui/PlayButton.cs" id="7_rlaii"]
 [ext_resource type="Script" uid="uid://dqtjfxo1x2n3u" path="res://src/Presentation/Ui/ConnectionBadge.cs" id="8_cnbdg"]
-[ext_resource type="Texture2D" path="res://assets/icons/PagePrevious.svg" id="9_pprv"]
-[ext_resource type="Texture2D" path="res://assets/icons/PageNext.svg" id="10_pnxt"]
-[ext_resource type="Texture2D" path="res://assets/icons/PageLast.svg" id="11_plst"]
+[ext_resource type="Texture2D" uid="uid://cmucxs32aj0p" path="res://assets/icons/PagePrevious.svg" id="9_pprv"]
+[ext_resource type="Texture2D" uid="uid://p0helc5jij01" path="res://assets/icons/PageNext.svg" id="10_pnxt"]
+[ext_resource type="Texture2D" uid="uid://dspgj87mm8olq" path="res://assets/icons/PageLast.svg" id="11_plst"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1bvp3"]
 font_size = 120
@@ -879,6 +879,13 @@ corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w3p8q"]
+bg_color = Color(0.878, 0.702, 0.255, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [node name="Main" type="Control" unique_id=446193922]
 layout_mode = 3
 anchors_preset = 15
@@ -981,7 +988,7 @@ handle_input_locally = false
 msaa_2d = 3
 use_taa = true
 canvas_item_default_texture_filter = 3
-size = Vector2i(892, 714)
+size = Vector2i(892, 720)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
@@ -1064,10 +1071,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -180.0
-offset_top = -49.0
-offset_right = -12.0
-offset_bottom = -17.0
+offset_left = -216.0
+offset_top = -100.0
+offset_right = -48.0
+offset_bottom = -68.0
 grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2
@@ -1077,13 +1084,12 @@ script = ExtResource("8_cnbdg")
 [node name="HBox" type="HBoxContainer" parent="ConnectionBadge" unique_id=2003001002]
 layout_mode = 2
 theme_override_constants/separation = 8
-alignment = 1
 
-[node name="Dot" type="ColorRect" parent="ConnectionBadge/HBox" unique_id=2003001003]
+[node name="Dot" type="Panel" parent="ConnectionBadge/HBox" unique_id=2003001003]
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 size_flags_vertical = 4
-color = Color(0.878, 0.702, 0.255, 1)
+theme_override_styles/panel = SubResource("StyleBoxFlat_w3p8q")
 
 [node name="StatusLabel" type="Label" parent="ConnectionBadge/HBox" unique_id=2003001004]
 layout_mode = 2
