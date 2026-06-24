@@ -3,21 +3,69 @@ namespace MarsGridVisualizer.Domain;
 public class StateManager
 {
 	private readonly SortedDictionary<long, State> ticks = [];
-	private long currentTick = 0;
+	private long currentTick = -1;
+
+	public long CurrentTick => currentTick;
+	public long LatestTick { get; private set; } = -1;
+	public long EarliestTick { get; private set; } = -1;
+	public bool HasAny => ticks.Count > 0;
+	public bool IsAtLatest => HasAny && currentTick >= LatestTick;
 
 	public void Add(State tick)
 	{
 		if (ticks.TryGetValue(tick.CurrentTick, out var existing))
 		{
 			existing.Merge(tick);
+			return;
 		}
-		else
-		{
-			ticks.Add(tick.CurrentTick, tick);
-		}
+
+		ticks.Add(tick.CurrentTick, tick);
+		if (tick.CurrentTick > LatestTick) LatestTick = tick.CurrentTick;
+		if (EarliestTick < 0 || tick.CurrentTick < EarliestTick) EarliestTick = tick.CurrentTick;
 	}
 
 	public State? Current => ticks.GetValueOrDefault(currentTick);
-	public State? Next() => ticks.GetValueOrDefault(++currentTick);
-	public State? Previous() => ticks.GetValueOrDefault(--currentTick);
+
+	public bool TryAdvance()
+	{
+		if (ticks.ContainsKey(currentTick + 1))
+		{
+			currentTick++;
+			return true;
+		}
+		foreach (var key in ticks.Keys)
+		{
+			if (key > currentTick)
+			{
+				currentTick = key;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public bool TryStepBack()
+	{
+		if (ticks.ContainsKey(currentTick - 1))
+		{
+			currentTick--;
+			return true;
+		}
+		long? candidate = null;
+		foreach (var key in ticks.Keys)
+		{
+			if (key >= currentTick) break;
+			candidate = key;
+		}
+		if (candidate is not { } target) return false;
+		currentTick = target;
+		return true;
+	}
+
+	public bool Seek(long tick)
+	{
+		if (!ticks.ContainsKey(tick)) return false;
+		currentTick = tick;
+		return true;
+	}
 }

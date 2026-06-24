@@ -7,15 +7,13 @@
 [ext_resource type="Script" uid="uid://uuywhc01w4im" path="res://src/Infrastructure/BaseMapLayer.cs" id="4_kmhfv"]
 [ext_resource type="Texture2D" uid="uid://bfbhiqo16dfb2" path="res://assets/icons/Play.svg" id="6_kmhfv"]
 [ext_resource type="Script" uid="uid://bnbnea77bqrun" path="res://src/Presentation/Ui/PlayButton.cs" id="7_rlaii"]
+[ext_resource type="Script" uid="uid://dqtjfxo1x2n3u" path="res://src/Presentation/Ui/ConnectionBadge.cs" id="8_cnbdg"]
+[ext_resource type="Texture2D" path="res://assets/icons/PagePrevious.svg" id="9_pprv"]
+[ext_resource type="Texture2D" path="res://assets/icons/PageNext.svg" id="10_pnxt"]
+[ext_resource type="Texture2D" path="res://assets/icons/PageLast.svg" id="11_plst"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1bvp3"]
 font_size = 120
-font_color = Color(0.867441, 0.291424, 0.153771, 1)
-outline_size = 39
-outline_color = Color(0.47876, 0.133588, 0.0491394, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_h2yge"]
-font_size = 59
 font_color = Color(0.867441, 0.291424, 0.153771, 1)
 outline_size = 39
 outline_color = Color(0.47876, 0.133588, 0.0491394, 1)
@@ -870,6 +868,17 @@ content_margin_right = 10.0
 content_margin_bottom = 10.0
 bg_color = Color(0.207843, 0.207843, 0.207843, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge"]
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 5.0
+bg_color = Color(0.1, 0.1, 0.1, 0.75)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
 [node name="Main" type="Control" unique_id=446193922]
 layout_mode = 3
 anchors_preset = 15
@@ -896,12 +905,6 @@ visible = false
 layout_mode = 2
 text = "Map Not Found"
 label_settings = SubResource("LabelSettings_1bvp3")
-
-[node name="WaitingForSimulation" type="Label" parent="ErrorLabelsContainer" unique_id=1780473234]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Connecting to simulation..."
-label_settings = SubResource("LabelSettings_h2yge")
 
 [node name="LayoutRoot" type="VBoxContainer" parent="." unique_id=429205210]
 layout_mode = 1
@@ -978,7 +981,7 @@ handle_input_locally = false
 msaa_2d = 3
 use_taa = true
 canvas_item_default_texture_filter = 3
-size = Vector2i(892, 709)
+size = Vector2i(892, 714)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
@@ -1012,18 +1015,79 @@ script = ExtResource("3_1bvp3")
 [node name="Timeline" type="VBoxContainer" parent="LayoutRoot" unique_id=1234223338]
 layout_mode = 2
 
-[node name="PlayButton" type="Button" parent="LayoutRoot/Timeline" unique_id=1425976601]
+[node name="Controls" type="HBoxContainer" parent="LayoutRoot/Timeline" unique_id=1234223339]
 layout_mode = 2
 size_flags_horizontal = 4
-size_flags_vertical = 4
+alignment = 1
+
+[node name="StepBackButton" type="Button" parent="LayoutRoot/Timeline/Controls" unique_id=1425976603]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Step back one tick"
+icon = ExtResource("9_pprv")
+icon_alignment = 1
+
+[node name="PlayButton" type="Button" parent="LayoutRoot/Timeline/Controls" unique_id=1425976601]
+unique_name_in_owner = true
+layout_mode = 2
 toggle_mode = true
 action_mode = 0
 icon = ExtResource("6_kmhfv")
 icon_alignment = 1
 script = ExtResource("7_rlaii")
 
-[node name="ProgressBar" type="ProgressBar" parent="LayoutRoot/Timeline" unique_id=1707191276]
+[node name="StepForwardButton" type="Button" parent="LayoutRoot/Timeline/Controls" unique_id=1425976604]
+unique_name_in_owner = true
 layout_mode = 2
+tooltip_text = "Step forward one tick"
+icon = ExtResource("10_pnxt")
+icon_alignment = 1
+
+[node name="JumpToLatestButton" type="Button" parent="LayoutRoot/Timeline/Controls" unique_id=1425976602]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Jump to latest tick"
+disabled = true
+icon = ExtResource("11_plst")
+icon_alignment = 1
+
+[node name="Scrubber" type="HSlider" parent="LayoutRoot/Timeline" unique_id=1707191276]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ConnectionBadge" type="PanelContainer" parent="." unique_id=2003001001]
+unique_name_in_owner = true
+z_index = 2
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -49.0
+offset_right = -12.0
+offset_bottom = -17.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_badge")
+script = ExtResource("8_cnbdg")
+
+[node name="HBox" type="HBoxContainer" parent="ConnectionBadge" unique_id=2003001002]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Dot" type="ColorRect" parent="ConnectionBadge/HBox" unique_id=2003001003]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 2
+size_flags_vertical = 4
+color = Color(0.878, 0.702, 0.255, 1)
+
+[node name="StatusLabel" type="Label" parent="ConnectionBadge/HBox" unique_id=2003001004]
+layout_mode = 2
+text = "Connecting…"
 
 [node name="EndScoreLabel" type="RichTextLabel" parent="." unique_id=1869424290]
 unique_name_in_owner = true

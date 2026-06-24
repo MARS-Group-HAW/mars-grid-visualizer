@@ -22,27 +22,25 @@ public partial class LaserTag(BaseMapLayer tileMapLayer) : Node
 	private GameState gameState = new GameState.Loading();
 	private const int BarrelRadius = 3;
 	private const float AgentMoveDuration = 0.10f;
-	private Label? waitingLabel;
 	private Control parent = null!;
 
 
 	public override void _Ready()
 	{
 		parent = GetParent<Control>();
-		var playButton = parent.GetNode<PlayButton>("LayoutRoot/Timeline/PlayButton");
+		var playButton = parent.GetNode<PlayButton>("%PlayButton");
 		playButton.PausedChanged += OnPausedChanged;
 
 		tileSetSpritesheet = (TileSetAtlasSource)
 			tileMapLayer.TileSet.GetSource(tileMapLayer.TileSet.GetSourceId(0));
 
-		waitingLabel = parent.GetNode<Label>("%WaitingForSimulation");
-		client.OnConnected += waitingLabel.Hide;
+		var badge = parent.GetNode<ConnectionBadge>("%ConnectionBadge");
+		client.OnConnected += () => badge.SetState(ConnectionState.Connected);
 		client.OnDisconnected += (int closeCode, string closeReason) =>
 		{
 			// TODO: show finish screen
 			if (gameState is GameState.Finished) return;
-			waitingLabel.Text = "Connection lost. Reconnecting...";
-			waitingLabel.Show();
+			badge.SetState(ConnectionState.Disconnected);
 		};
 
 		client.OnMessage += (string message) =>
