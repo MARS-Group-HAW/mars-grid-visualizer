@@ -3,6 +3,7 @@ using Godot;
 using MarsGridVisualizer.Domain;
 using MarsGridVisualizer.Infrastructure;
 using MarsGridVisualizer.Presentation;
+using MarsGridVisualizer.Presentation.Ui;
 using MarsGridVisualizer.Ui;
 
 namespace MarsGridVisualizer;
@@ -30,7 +31,7 @@ public partial class Program : Control
 	private Button jumpToLatestButton = null!;
 	private Button stepBackButton = null!;
 	private Button stepForwardButton = null!;
-	private RichTextLabel tickLabel = null!;
+	private MetadataPanel metadataPanel = null!;
 	private bool isPaused = false;
 	private bool suppressScrubberSignal = false;
 
@@ -58,7 +59,7 @@ public partial class Program : Control
 		jumpToLatestButton = GetNode<Button>("%JumpToLatestButton");
 		stepBackButton = GetNode<Button>("%StepBackButton");
 		stepForwardButton = GetNode<Button>("%StepForwardButton");
-		tickLabel = GetNode<RichTextLabel>("%Tick");
+		metadataPanel = GetNode<MetadataPanel>("%MetadataPanel");
 
 		playButton.PausedChanged += paused => isPaused = paused;
 		scrubber.ValueChanged += OnScrubberChanged;
@@ -81,6 +82,7 @@ public partial class Program : Control
 			{
 				store.MaxTicks = initial.MaxTicks;
 				store.WorldSize = initial.WorldSize;
+				metadataPanel.SetStat("maxTicks", "Max Ticks:", initial.MaxTicks.ToString());
 			}
 			var state = State.FromJsonModel(msg);
 			store.Add(state);
@@ -169,7 +171,7 @@ public partial class Program : Control
 	{
 		if (store.Current is not { } current) return;
 		renderer.Render(current);
-		tickLabel.Text = current.CurrentTick.ToString() + "\n\n";
+		metadataPanel.SetStat("tick", "Current Tick:", current.CurrentTick.ToString());
 	}
 
 	private void SyncScrubberToCursor()

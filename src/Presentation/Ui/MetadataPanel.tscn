@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://cwxsrkv8h2nm3"]
+
+[ext_resource type="Script" uid="uid://b6yt3ftqj4w5p" path="res://src/Presentation/Ui/MetadataPanel.cs" id="1_mtpnl"]
+
+[node name="MetadataPanel" type="VBoxContainer"]
+theme_override_constants/separation = 12
+script = ExtResource("1_mtpnl")

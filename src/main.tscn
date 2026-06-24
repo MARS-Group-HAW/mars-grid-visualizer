@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://cmucxs32aj0p" path="res://assets/icons/PagePrevious.svg" id="9_pprv"]
 [ext_resource type="Texture2D" uid="uid://p0helc5jij01" path="res://assets/icons/PageNext.svg" id="10_pnxt"]
 [ext_resource type="Texture2D" uid="uid://dspgj87mm8olq" path="res://assets/icons/PageLast.svg" id="11_plst"]
+[ext_resource type="PackedScene" uid="uid://cwxsrkv8h2nm3" path="res://src/Presentation/Ui/MetadataPanel.tscn" id="12_a3xkq"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_1bvp3"]
 font_size = 120
@@ -939,28 +940,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_fyndt")
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="CurrentTick" type="Label" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer/ScoreVBoxContainer" unique_id=403799621]
+[node name="MetadataPanel" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer/ScoreVBoxContainer" instance=ExtResource("12_a3xkq")]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Current Tick:"
-
-[node name="Tick" type="RichTextLabel" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer/ScoreVBoxContainer" unique_id=949194379]
-unique_name_in_owner = true
-layout_mode = 2
-bbcode_enabled = true
-text = "loading tick"
-fit_content = true
-
-[node name="ScoreLabel" type="Label" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer/ScoreVBoxContainer" unique_id=1785654397]
-layout_mode = 2
-text = "Score:"
-
-[node name="Score" type="RichTextLabel" parent="LayoutRoot/MainView/LeftPanel/ScorePanelContainer/ScoreVBoxContainer" unique_id=57459733]
-unique_name_in_owner = true
-layout_mode = 2
-bbcode_enabled = true
-text = "loading score"
-fit_content = true
 
 [node name="HSplitContainer" type="HSplitContainer" parent="LayoutRoot/MainView" unique_id=1618325136]
 layout_mode = 2

@@ -23,11 +23,13 @@ public partial class LaserTag(BaseMapLayer tileMapLayer) : Node
 	private const int BarrelRadius = 3;
 	private const float AgentMoveDuration = 0.10f;
 	private Control parent = null!;
+	private MetadataPanel metadataPanel = null!;
 
 
 	public override void _Ready()
 	{
 		parent = GetParent<Control>();
+		metadataPanel = parent.GetNode<MetadataPanel>("%MetadataPanel");
 		var playButton = parent.GetNode<PlayButton>("%PlayButton");
 		playButton.PausedChanged += OnPausedChanged;
 
@@ -154,15 +156,14 @@ public partial class LaserTag(BaseMapLayer tileMapLayer) : Node
 	private void UpdateCurrentTick(int tick)
 	{
 		currentTick = tick;
-		parent.GetNode<RichTextLabel>("%Tick").Text = tick.ToString() + "\n\n";
+		metadataPanel.SetStat("tick", "Current Tick:", tick.ToString());
 	}
 
 	private void UpdateScores(List<Score> scores)
 	{
-		var scoreNode = parent.GetNode<RichTextLabel>("%Score");
 		var newText = string.Join("\n", scores.Select(s =>
 					$"[color={s.TeamColor.ColorToHtml()}]{s.TeamName}: {s.TeamScore}[/color]"));
-		scoreNode.Text = newText;
+		metadataPanel.SetStat("score", "Score:", newText);
 	}
 
 	private void DrawGame(AgentJsonData parsed)
