@@ -30,6 +30,7 @@ public partial class Program : Control
 	private Button jumpToLatestButton = null!;
 	private Button stepBackButton = null!;
 	private Button stepForwardButton = null!;
+	private RichTextLabel tickLabel = null!;
 	private bool isPaused = false;
 	private bool suppressScrubberSignal = false;
 
@@ -57,6 +58,7 @@ public partial class Program : Control
 		jumpToLatestButton = GetNode<Button>("%JumpToLatestButton");
 		stepBackButton = GetNode<Button>("%StepBackButton");
 		stepForwardButton = GetNode<Button>("%StepForwardButton");
+		tickLabel = GetNode<RichTextLabel>("%Tick");
 
 		playButton.PausedChanged += paused => isPaused = paused;
 		scrubber.ValueChanged += OnScrubberChanged;
@@ -167,6 +169,7 @@ public partial class Program : Control
 	{
 		if (store.Current is not { } current) return;
 		renderer.Render(current);
+		tickLabel.Text = current.CurrentTick.ToString() + "\n\n";
 	}
 
 	private void SyncScrubberToCursor()
