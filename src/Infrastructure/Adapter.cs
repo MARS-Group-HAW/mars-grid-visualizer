@@ -43,6 +43,14 @@ public struct JsonEntity
 	[J("x")] public int X { get; set; }
 	[J("y")] public int Y { get; set; }
 	[J("b")] public int B { get; set; }
+	[J("p")] public EntityProperties? P { get; set; }
+}
+
+public struct EntityProperties
+{
+	// HACK: this is specific to LaserTag right now and should be generic but that
+	// probably requires reflection that I first have to think about some more.
+	[J("TeamName")] public string? TeamName { get; set; }
 }
 
 public struct RasterLayer

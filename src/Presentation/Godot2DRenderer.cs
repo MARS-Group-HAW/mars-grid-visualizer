@@ -7,6 +7,7 @@ namespace MarsGridVisualizer.Presentation;
 public partial class Godot2DRenderer : Node, IRenderer
 {
 	private readonly Dictionary<long, RenderNode> cache = [];
+	private readonly Dictionary<string, Godot.Color> typeColours = [];
 	public BaseMapLayer? TileMapLayer { get; internal set; }
 
 	private partial class RenderNode(Godot.Color colour, string? SpritePath = null) : Sprite2D
@@ -35,11 +36,17 @@ public partial class Godot2DRenderer : Node, IRenderer
 		if (TileMapLayer is null)
 			GD.PrintErr($"warn: TileMapLayer is still null!");
 
-		foreach (var agentType in state.AgentTypes.Values)
+		foreach (var (typeName, entities) in state.AgentTypes)
 		{
-			var colour = Colours.GetRandom().ToGodotColor();
-			foreach (var instance in agentType)
+			foreach (var instance in entities)
 			{
+				var colourKey = instance.Team ?? typeName;
+				if (!typeColours.TryGetValue(colourKey, out var colour))
+				{
+					colour = Colours.All[typeColours.Count % Colours.All.Length].ToGodotColor();
+					typeColours[colourKey] = colour;
+				}
+
 				if (cache.TryGetValue(instance.Id, out var cached))
 				{
 					cached.Position = TileMapLayer!.MapToLocal(

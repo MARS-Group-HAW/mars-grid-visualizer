@@ -1,11 +1,12 @@
 using System.Diagnostics;
+using System.Linq;
 using MarsGridVisualizer.Infrastructure;
 
 namespace MarsGridVisualizer.Domain;
 
-public readonly record struct Entity(long Id, int X, int Y, int Bearing)
+public readonly record struct Entity(long Id, int X, int Y, int Bearing, string? Team)
 {
-	static internal Entity FromJsonEntity(JsonEntity e) => new(e.Id, e.X, e.Y, e.B);
+	static internal Entity FromJsonEntity(JsonEntity e) => new(e.Id, e.X, e.Y, e.B, e.P?.TeamName);
 }
 
 public class State(
