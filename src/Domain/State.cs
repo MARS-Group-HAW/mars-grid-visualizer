@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using MarsGridVisualizer.Infrastructure;
 
 namespace MarsGridVisualizer.Domain;
@@ -29,15 +30,27 @@ public class State(int currentTick, Dictionary<string, Entity[]> agentTypes)
 				AgentTypes[key] = other.AgentTypes[key];
 	}
 
-	internal static State FromJsonModel(JsonModel model)
+	internal static State FromJsonModel(JsonMessages msg)
 	{
-		var mapped = new Entity[model.Entities.Length];
-		for (var i = 0; i < model.Entities.Length; i++)
-			mapped[i] = Entity.FromJsonEntity(model.Entities[i]);
+		// TODO:
+		// JsonMessages.EntityUpdate state = msg switch
+		// {
+		// 	JsonMessages.InitialStateMessage initial => throw new NotImplementedException(),
+		// 	JsonMessages.EntityUpdate update => throw new NotImplementedException(),
+		// 	JsonMessages.RasterUpdate update => throw new NotImplementedException(),
+		// 	JsonMessages.VectorUpdate update => throw new NotImplementedException(),
+		// 	_ => throw new UnreachableException(),
+		// };
+		//
 
-		return new(model.CurrentTick, new Dictionary<string, Entity[]>
+		var state = (JsonMessages.EntityUpdate)msg;
+		var mapped = new Entity[state.Entities.Length];
+		for (var i = 0; i < state.Entities.Length; i++)
+			mapped[i] = Entity.FromJsonEntity(state.Entities[i]);
+
+		return new(state.CurrentTick, new Dictionary<string, Entity[]>
 		{
-			[model.TypeName] = mapped,
+			[state.TypeName] = mapped,
 		});
 	}
 }

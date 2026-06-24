@@ -1,5 +1,6 @@
 using Godot;
 using MarsGridVisualizer.Domain;
+using MarsGridVisualizer.Infrastructure;
 
 namespace MarsGridVisualizer.Presentation;
 

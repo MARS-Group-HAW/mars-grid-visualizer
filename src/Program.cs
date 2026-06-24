@@ -48,10 +48,11 @@ public partial class Program : Control
 				//   - probably good if there is an extra class
 				// - TODO: investigate how /progress looks like when CSV or DB is
 				//   the source
-				var model =
-					adapter.ModelFromPythonViz(message)
-					?? throw new NotImplementedException("model is null");
-				store.Add(State.FromJsonModel(model));
+
+				var msg = Adapter.ModelFromPythonViz(message);
+				if (msg is null) return;
+				var state = State.FromJsonModel(msg);
+				store.Add(state);
 			};
 			client.Connect("ws://127.0.0.1:4567/vis");
 
